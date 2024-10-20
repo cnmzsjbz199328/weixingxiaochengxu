@@ -1,0 +1,30 @@
+<view class="container">
+  <text class="title">{{createBookText}}</text>
+  <form bindsubmit="createBook">
+    <input 
+      class="input" 
+      name="bookName" 
+      placeholder="{{bookNameText}}" 
+      bindinput="onInputChange" 
+      data-field="bookName" 
+      value="{{bookName}}" 
+    />
+    <input 
+      class="input" 
+      name="author" 
+      placeholder="{{authorText}}" 
+      bindinput="onInputChange" 
+      data-field="author" 
+      value="{{author}}" 
+    />
+    <textarea 
+      class="textarea" 
+      name="abstract" 
+      placeholder="{{abstractText}}" 
+      bindinput="onInputChange" 
+      data-field="abstract" 
+      value="{{abstract}}" 
+    />
+    <button class="submit-btn" form-type="submit">{{submitText}}</button>
+  </form>
+</view>

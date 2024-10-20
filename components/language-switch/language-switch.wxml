@@ -1,0 +1,3 @@
+<view class="language-switch" bindtap="switchLanguage">
+  <text>{{getApp().globalData.language === 'zh' ? 'EN' : '中文'}}</text>
+</view>

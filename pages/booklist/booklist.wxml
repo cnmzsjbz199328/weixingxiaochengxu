@@ -1,0 +1,15 @@
+<view class="container">
+  <view class="header">
+    <text class="title">{{bookListText}}</text>
+  </view>
+  <view class="book-list">
+    <view wx:for="{{books}}" wx:key="id" class="book-item">
+      <view class="book-info">
+        <text class="book-name">{{item.name}}</text>
+        <text class="book-author">{{authorText}}: {{item.author}}</text>
+      </view>
+      <button class="detail-btn" bindtap="onBookDetail" data-id="{{item.id}}">{{detailsText}}</button>
+    </view>
+  </view>
+  <button class="add-book-btn" bindtap="onAddBook">{{addBookText}}</button>
+</view>

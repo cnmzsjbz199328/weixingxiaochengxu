@@ -1,0 +1,17 @@
+<view class="container">
+  <view class="header">
+    <text class="title">{{meetingListText}}</text>
+  </view>
+  <view class="meeting-list">
+    <view wx:for="{{meetings}}" wx:key="id" class="meeting-item">
+      <view class="meeting-info">
+        <text class="meeting-name">{{item.name}}</text>
+        <text class="meeting-date">{{dateText}}: {{item.date}}</text>
+        <text class="meeting-time">{{timeText}}: {{item.time}}</text>
+        <text class="meeting-location">{{locationText}}: {{item.location}}</text>
+      </view>
+      <button class="detail-btn" bindtap="onMeetingDetail" data-id="{{item.id}}">{{detailsText}}</button>
+    </view>
+  </view>
+  <button class="add-meeting-btn" bindtap="onAddMeeting">{{addMeetingText}}</button>
+</view>

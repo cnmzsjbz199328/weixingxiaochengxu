@@ -1,0 +1,12 @@
+.language-switch {
+  padding: 5px 10px;
+  background-color: #007AFF;
+  color: white;
+  border-radius: 4px;
+  font-size: 14px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}

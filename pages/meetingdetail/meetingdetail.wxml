@@ -1,0 +1,29 @@
+<view class="container">
+  <view class="meeting-info">
+    <text class="title">{{meeting.bookName}}</text>
+    <text class="info">日期：{{meeting.date}}</text>
+    <text class="info">时间：{{meeting.time}}</text>
+    <text class="info">地点：{{meeting.location}}</text>
+  </view>
+  
+  <button class="btn-participate" bindtap="toggleParticipation">
+    {{isParticipating ? '取消参与' : '确认参与'}}
+  </button>
+
+  <view class="comments-section">
+    <text class="section-title">评论</text>
+    <view class="comment-list">
+      <block wx:for="{{comments}}" wx:key="index">
+        <view class="comment-item">
+          <text class="comment-user">{{item.userName}}</text>
+          <text class="comment-content">{{item.content}}</text>
+          <text class="comment-time">{{item.createdAt}}</text>
+        </view>
+      </block>
+    </view>
+    <view class="comment-input">
+      <input class="input" placeholder="写下你的评论" bindinput="onCommentInput" value="{{newComment}}" />
+      <button class="btn-submit" bindtap="submitComment">发送</button>
+    </view>
+  </view>
+</view>

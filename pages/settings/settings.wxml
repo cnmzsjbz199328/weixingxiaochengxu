@@ -1,0 +1,10 @@
+<view class="container">
+  <view class="section">
+    <text class="section-title">{{t('language')}}</text>
+    <view class="language-switch" bindtap="switchLanguage">
+      <text>{{currentLanguage === 'zh' ? '中文' : 'English'}}</text>
+      <switch checked="{{currentLanguage === 'en'}}" />
+    </view>
+  </view>
+  <!-- 可以在这里添加其他设置选项 -->
+</view>
