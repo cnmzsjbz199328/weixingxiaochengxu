@@ -15,6 +15,9 @@ App({
 
     // 初始化语言设置
     this.updateTabBarLanguage()
+
+    // 添加 API 基础 URL 作为环境变量
+    this.globalData.apiBaseUrl = 'https://adelaide-reading-api.tj15982183241.workers.dev/api'
   },
 
   globalData: {
@@ -24,7 +27,8 @@ App({
       zh: zhLang,
       en: enLang
     },
-    tabBarPages: ['pages/index/index', 'pages/booklist/booklist', 'pages/meetinglist/meetinglist', 'pages/profile/profile']
+    tabBarPages: ['pages/index/index', 'pages/booklist/booklist', 'pages/meetinglist/meetinglist', 'pages/profile/profile'],
+    apiBaseUrl: '' // 将在 onLaunch 中设置
   },
   
   switchLanguage(lang) {
@@ -90,5 +94,60 @@ App({
     const translation = this.globalData.langData[this.globalData.language][key]
     console.log(`Translating key "${key}" to "${translation}"`)
     return translation
+  },
+
+  login: function() {
+    console.log('Login function called');
+    return new Promise((resolve, reject) => {
+      wx.login({
+        success: res => {
+          if (res.code) {
+            console.log("wx.login 成功，code:", res.code);
+            console.log('Sending login request to server');
+            wx.request({
+              url: `${this.globalData.apiBaseUrl}/login`,
+              method: 'POST',
+              data: {
+                code: res.code
+              },
+              success: (res) => {
+                console.log('Server response:', res);
+                if (res.statusCode === 200 && res.data) {
+                  console.log('Login successful, user data:', res.data);
+                  this.globalData.userInfo = res.data;
+                  wx.setStorageSync('userInfo', res.data);
+                  resolve(res.data);
+                } else {
+                  console.error('Login failed, server response:', res);
+                  reject('登录失败');
+                }
+              },
+              fail: (error) => {
+                console.error('Network request failed:', error);
+                reject('网络请求失败');
+              }
+            });
+          } else {
+            console.error("wx.login 成功但未获取到 code，错误信息:", res.errMsg);
+            reject('获取用户登录凭证失败：' + res.errMsg);
+          }
+        },
+        fail: (error) => {
+          console.error("wx.login 调用失败，错误信息:", error);
+          reject('微信登录失败');
+        }
+      });
+    });
+  },
+
+  logout: function() {
+    console.log('Logout function called');
+    return new Promise((resolve, reject) => {
+      console.log('Clearing user info and storage');
+      this.globalData.userInfo = null;
+      wx.removeStorageSync('userInfo');
+      console.log('User logged out successfully');
+      resolve();
+    });
   }
 })

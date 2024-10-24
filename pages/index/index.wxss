@@ -24,13 +24,16 @@
 
 .activity-list, .book-list {
   background-color: #f8f8f8;
+  border: 1px solid #ddd;
   border-radius: 8px;
   padding: 10px;
+  height: 200px; /* 设置固定高度 */
+  overflow-y: auto; /* 添加纵向滚动条 */
 }
 
 .activity-item, .book-item {
   margin-bottom: 15px;
-  padding: 15px;
+  padding: 2px;
   background-color: #ffffff;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);

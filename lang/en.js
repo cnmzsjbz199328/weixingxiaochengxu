@@ -58,5 +58,17 @@ export default {
   abstract: 'Abstract',
   addMeeting: 'Add Meeting',
   editProfile: 'Edit Profile',
-  viewHistory: 'View History'
+  viewHistory: 'View History',
+  myBookList: 'My Book List',
+  myMeetingList: 'My Meeting List',
+  ok: 'OK',
+  noAbstract: 'No abstract available',
+  meetingName: 'Meeting Name',
+  selectBooks: 'Select Books',
+  fillAllFields: 'Please fill in all fields and select at least one book',
+  searchBooks: 'Search books',
+  searchMeetings: 'Search meetings',
+  logoutConfirmation: 'Are you sure you want to log out?',
+  logoutSuccess: 'Logged out successfully',
+  logoutFailed: 'Logout failed, please try again'
 }

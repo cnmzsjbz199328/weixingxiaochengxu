@@ -7,14 +7,7 @@ Page({
    * Page initial data
    */
   data: {
-    userInfo: {
-      avatarUrl: '',
-      nickName: '',
-      userId: '',
-      joinDate: '',
-      meetingsCount: 0,
-      booksCount: 0
-    },
+    userInfo: null,
     t: {}, // 用于存储翻译函数
     booksReadText: '',
     meetingsAttendedText: '',
@@ -33,7 +26,7 @@ Page({
     console.log('Translation function set:', this.data.t)
     this.updatePageTexts()
     this.updateNavBarTitle()
-    this.fetchUserInfo()
+    this.checkLogin()
   },
 
   updatePageTexts: function() {
@@ -119,21 +112,35 @@ Page({
 
   },
 
-  fetchUserInfo: function() {
-    console.log('Fetching user info')
-    // 这里应该是从服务器或本地存储获取用户信息的逻辑
-    // 暂时使用模拟数据
-    this.setData({
-      userInfo: {
-        avatarUrl: '/images/default-avatar.png',
-        nickName: '示例用户',
-        userId: 'user123',
-        joinDate: '2023年1月1日',
-        meetingsCount: 5,
-        booksCount: 10
-      }
+  checkLogin: function() {
+    console.log('Checking login status');
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo) {
+      console.log('User is logged in:', userInfo);
+      app.globalData.userInfo = userInfo;
+      this.setData({
+        userInfo: userInfo
+      });
+    } else {
+      console.log('User is not logged in');
+    }
+  },
+
+  onLogin: function() {
+    console.log('Login button clicked');
+    app.login().then(userInfo => {
+      console.log('Login successful, updating UI');
+      this.setData({
+        userInfo: userInfo
+      });
+      console.log('UI updated with user info:', userInfo);
+    }).catch(error => {
+      console.error('Login failed:', error);
+      wx.showToast({
+        title: '登录失败，请重试',
+        icon: 'none'
+      });
     });
-    console.log('User info fetched:', this.data.userInfo)
   },
 
   onEditProfile: function() {
@@ -168,20 +175,37 @@ Page({
   },
 
   onLogout: function() {
-    console.log('Logout button clicked')
+    console.log('Logout button clicked');
     wx.showModal({
       title: this.data.t('logout'),
       content: this.data.t('logoutConfirmation'),
       success: (res) => {
         if (res.confirm) {
-          console.log('User confirmed logout')
-          // 执行退出登录操作
-          wx.clearStorage();
-          wx.reLaunch({
-            url: '/pages/index/index'
+          console.log('User confirmed logout');
+          app.logout().then(() => {
+            console.log('Logout successful, updating UI');
+            this.setData({
+              userInfo: null
+            });
+            wx.showToast({
+              title: this.data.t('logoutSuccess'),
+              icon: 'success',
+              duration: 2000
+            });
+            console.log('Navigating to index page');
+            wx.switchTab({
+              url: '/pages/index/index'
+            });
+          }).catch((error) => {
+            console.error('Logout failed:', error);
+            wx.showToast({
+              title: this.data.t('logoutFailed'),
+              icon: 'none',
+              duration: 2000
+            });
           });
         } else {
-          console.log('User canceled logout')
+          console.log('User canceled logout');
         }
       }
     });
@@ -193,5 +217,18 @@ Page({
     console.log('Translation function updated')
     this.updatePageTexts()
     this.updateNavBarTitle()
+  },
+
+  fetchUserInfo: function() {
+    console.log('Fetching user info');
+    if (app.globalData.userInfo) {
+      console.log('User info found in global data:', app.globalData.userInfo);
+      this.setData({
+        userInfo: app.globalData.userInfo
+      });
+    } else {
+      console.log('No user info found, attempting to login');
+      this.onLogin();
+    }
   }
 })

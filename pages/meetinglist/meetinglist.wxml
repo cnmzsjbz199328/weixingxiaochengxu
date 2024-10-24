@@ -1,16 +1,19 @@
 <view class="container">
   <view class="header">
     <text class="title">{{meetingListText}}</text>
+    <view class="search-container">
+      <input class="search-input" placeholder="{{searchPlaceholder}}" bindinput="onSearchInput" value="{{searchKeyword}}"/>
+      <icon class="search-icon" type="search" size="20"/>
+    </view>
   </view>
   <view class="meeting-list">
-    <view wx:for="{{meetings}}" wx:key="id" class="meeting-item">
+    <view wx:for="{{filteredMeetings}}" wx:key="id" class="meeting-item">
       <view class="meeting-info">
         <text class="meeting-name">{{item.name}}</text>
         <text class="meeting-date">{{dateText}}: {{item.date}}</text>
         <text class="meeting-time">{{timeText}}: {{item.time}}</text>
         <text class="meeting-location">{{locationText}}: {{item.location}}</text>
       </view>
-      <button class="detail-btn" bindtap="onMeetingDetail" data-id="{{item.id}}">{{detailsText}}</button>
     </view>
   </view>
   <button class="add-meeting-btn" bindtap="onAddMeeting">{{addMeetingText}}</button>

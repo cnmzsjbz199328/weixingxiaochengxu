@@ -1,9 +1,13 @@
 <view class="container">
   <view class="header">
     <text class="title">{{bookListText}}</text>
+    <view class="search-container">
+      <input class="search-input" placeholder="{{searchPlaceholder}}" bindinput="onSearchInput" value="{{searchKeyword}}"/>
+      <icon class="search-icon" type="search" size="20"/>
+    </view>
   </view>
   <view class="book-list">
-    <view wx:for="{{books}}" wx:key="id" class="book-item">
+    <view wx:for="{{filteredBooks}}" wx:key="id" class="book-item">
       <view class="book-info">
         <text class="book-name">{{item.name}}</text>
         <text class="book-author">{{authorText}}: {{item.author}}</text>

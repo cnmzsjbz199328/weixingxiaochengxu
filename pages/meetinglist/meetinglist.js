@@ -3,13 +3,15 @@ const app = getApp()
 Page({
   data: {
     meetings: [],
+    filteredMeetings: [],
+    searchKeyword: '',
     t: {}, // 用于存储翻译函数
     meetingListText: '',
     addMeetingText: '',
     dateText: '',
     timeText: '',
     locationText: '',
-    detailsText: ''
+    searchPlaceholder: ''
   },
 
   onLoad: function() {
@@ -23,14 +25,14 @@ Page({
 
   updatePageTexts: function() {
     console.log('Updating page texts')
-    const meetingListText = this.data.t('meetingList')
+    const meetingListText = this.data.t('myMeetingList')
     const addMeetingText = this.data.t('addMeeting')
     const dateText = this.data.t('date')
     const timeText = this.data.t('time')
     const locationText = this.data.t('location')
-    const detailsText = this.data.t('details')
+    const searchPlaceholder = this.data.t('searchMeetings')
     
-    console.log('Translated texts:', { meetingListText, addMeetingText, dateText, timeText, locationText, detailsText })
+    console.log('Translated texts:', { meetingListText, addMeetingText, dateText, timeText, locationText, searchPlaceholder })
     
     this.setData({
       meetingListText,
@@ -38,7 +40,7 @@ Page({
       dateText,
       timeText,
       locationText,
-      detailsText
+      searchPlaceholder
     })
     
     console.log('Page texts updated:', this.data)
@@ -46,7 +48,7 @@ Page({
 
   updateNavBarTitle: function() {
     console.log('Updating nav bar title')
-    const title = this.data.t('meetingList')
+    const title = this.data.t('myMeetingList')
     console.log('Translated nav bar title:', title)
     wx.setNavigationBarTitle({
       title: title
@@ -63,15 +65,23 @@ Page({
       { id: 3, name: '《三体》科幻专场', date: '2023-05-29', time: '20:00', location: '社区中心' }
     ];
 
-    this.setData({ meetings })
+    this.setData({ 
+      meetings,
+      filteredMeetings: meetings
+    })
     console.log('Meetings fetched:', meetings)
   },
 
-  onMeetingDetail: function(e) {
-    const meetingId = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: `/pages/meetingdetail/meetingdetail?id=${meetingId}`
-    });
+  onSearchInput: function(e) {
+    const searchKeyword = e.detail.value.toLowerCase()
+    const filteredMeetings = this.data.meetings.filter(meeting => 
+      meeting.name.toLowerCase().includes(searchKeyword) || 
+      meeting.location.toLowerCase().includes(searchKeyword)
+    )
+    this.setData({
+      searchKeyword,
+      filteredMeetings
+    })
   },
 
   onAddMeeting: function() {
@@ -83,7 +93,6 @@ Page({
       },
       fail: (err) => {
         console.error('Navigation to create meeting page failed:', err);
-        // 如果导航失败，尝试使用 wx.redirectTo
         wx.redirectTo({
           url: '/pages/createmeeting/createmeeting',
           success: (res) => {

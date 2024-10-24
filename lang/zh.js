@@ -43,5 +43,17 @@ export default {
   abstract: '摘要',
   addMeeting: '添加会议',
   editProfile: '编辑资料',
-  viewHistory: '查看历史'
+  viewHistory: '查看历史',
+  myBookList: '我的书目列表',
+  myMeetingList: '我的会议列表',
+  ok: '确定',
+  noAbstract: '暂无摘要',
+  meetingName: '会议名称',
+  selectBooks: '选择书目',
+  fillAllFields: '请填写所有字段并选择至少一本书',
+  searchBooks: '搜索书目',
+  searchMeetings: '搜索会议',
+  logoutConfirmation: '确定要退出登录吗？',
+  logoutSuccess: '已成功退出登录',
+  logoutFailed: '退出登录失败，请重试'
 }

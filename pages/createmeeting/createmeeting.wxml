@@ -1,19 +1,53 @@
 <view class="container">
-  <view class="form-group">
-    <picker mode="date" bindchange="onInputChange" data-field="date">
-      <view class="picker">日期：{{date || '请选择日期'}}</view>
+  <form bindsubmit="createMeeting">
+    <input 
+      class="input" 
+      name="meetingName" 
+      placeholder="{{meetingNameText}}" 
+      bindinput="onInputChange" 
+      data-field="meetingName" 
+      value="{{meetingName}}" 
+    />
+    <picker 
+      class="picker" 
+      mode="date" 
+      bindchange="onInputChange" 
+      data-field="date" 
+      value="{{date}}"
+    >
+      <view class="picker-inner">{{date || dateText}}</view>
     </picker>
-  </view>
-  <view class="form-group">
-    <picker mode="time" bindchange="onInputChange" data-field="time">
-      <view class="picker">时间：{{time || '请选择时间'}}</view>
+    <picker 
+      class="picker" 
+      mode="time" 
+      bindchange="onInputChange" 
+      data-field="time" 
+      value="{{time}}"
+    >
+      <view class="picker-inner">{{time || timeText}}</view>
     </picker>
-  </view>
-  <view class="form-group">
-    <input class="input" placeholder="地点" data-field="location" bindinput="onInputChange" value="{{location}}" />
-  </view>
-  <view class="form-group">
-    <input class="input" placeholder="书目ID" data-field="bookId" bindinput="onInputChange" value="{{bookId}}" />
-  </view>
-  <button class="btn-submit" bindtap="createMeeting">创建会议</button>
+    <input 
+      class="input" 
+      name="location" 
+      placeholder="{{locationText}}" 
+      bindinput="onInputChange" 
+      data-field="location" 
+      value="{{location}}" 
+    />
+    <picker 
+      class="picker" 
+      mode="multiSelector" 
+      bindchange="onBookSelect" 
+      range="{{[books]}}" 
+      range-key="name"
+    >
+      <view class="picker-inner">
+        <block wx:if="{{selectedBooks.length > 0}}">
+          <text wx:for="{{selectedBooks}}" wx:key="*this">{{books[item].name}}{{index < selectedBooks.length - 1 ? ', ' : ''}}</text>
+        </block>
+        <text wx:else>{{selectBooksText}}</text>
+      </view>
+    </picker>
+    <button class="submit-btn" form-type="submit">{{submitText}}</button>
+  </form>
 </view>

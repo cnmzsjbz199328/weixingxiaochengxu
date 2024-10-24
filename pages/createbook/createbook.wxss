@@ -12,9 +12,14 @@
 .input, .textarea {
   width: 100%;
   padding: 10px;
+  margin-bottom: 15px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin: 10px;
+  box-sizing: border-box;
+}
+
+.input {
+  height: 44px;
 }
 
 .textarea {
@@ -28,4 +33,5 @@
   color: white;
   border: none;
   border-radius: 4px;
+  font-size: 16px;
 }

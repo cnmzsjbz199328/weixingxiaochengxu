@@ -5,6 +5,9 @@
   <view class="section">
     <text class="section-title">{{recentActivitiesText}}</text>
     <view class="activity-list">
+      <view wx:if="{{recentActivities.length === 0}}" class="no-activities">
+        {{t('noUpcomingActivities')}}
+      </view>
       <view wx:for="{{recentActivities}}" wx:key="id" class="activity-item">
         <view class="activity-name">{{item.name}}</view>
         <view class="activity-details">

@@ -20,9 +20,7 @@ Page({
   },
 
   updatePageTexts: function() {
-    console.log('Updating create book page texts');
     this.setData({
-      createBookText: this.data.t('createBook'),
       bookNameText: this.data.t('bookName'),
       authorText: this.data.t('author'),
       abstractText: this.data.t('abstract'),

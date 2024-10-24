@@ -1,5 +1,4 @@
 <view class="container">
-  <text class="title">{{createBookText}}</text>
   <form bindsubmit="createBook">
     <input 
       class="input" 

@@ -16,7 +16,8 @@ Page({
     console.log('Translation function set:', this.data.t)
     this.updatePageTexts()
     this.updateNavBarTitle()
-    this.loadTempData()
+    this.fetchBooks()
+    this.fetchMeetings()
   },
 
   updatePageTexts: function() {
@@ -45,13 +46,77 @@ Page({
     })
   },
 
-  onLanguageChange: function() {
-    console.log('Index page onLanguageChange called')
-    this.setData({ t: app.t.bind(app) })
-    console.log('Translation function updated:', this.data.t)
-    this.updatePageTexts()
-    this.updateNavBarTitle()
-    this.loadTempData()
+  fetchBooks: function() {
+    console.log('Fetching books from API')
+    wx.request({
+      url: `${app.globalData.apiBaseUrl}/books`,
+      method: 'GET',
+      success: (res) => {
+        console.log('Books fetched successfully:', res.data)
+        if (res.statusCode === 200 && res.data.results) {
+          // 获取前10本书作为热门书目
+          const popularBooks = res.data.results.slice(0, 10).map(book => ({
+            id: book.id,
+            name: book.name,
+            author: book.author
+          }))
+          this.setData({ popularBooks })
+        } else {
+          console.error('Failed to fetch books:', res)
+          wx.showToast({
+            title: this.data.t('fetchBooksFailed'),
+            icon: 'none'
+          })
+        }
+      },
+      fail: (error) => {
+        console.error('Error fetching books:', error)
+        wx.showToast({
+          title: this.data.t('networkError'),
+          icon: 'none'
+        })
+      }
+    })
+  },
+
+  fetchMeetings: function() {
+    console.log('Fetching meetings from API')
+    wx.request({
+      url: `${app.globalData.apiBaseUrl}/meetings`,
+      method: 'GET',
+      success: (res) => {
+        console.log('Meetings fetched successfully:', res.data)
+        if (res.statusCode === 200 && res.data.results) {
+          const currentDate = new Date().toISOString().split('T')[0]; // 获取当前日期
+          // 过滤并排序未来的会议
+          const futureMeetings = res.data.results
+            .filter(meeting => meeting.date >= currentDate)
+            .sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+          
+          // 获取前5个未来会议作为最近活动
+          const recentActivities = futureMeetings.slice(0, 5).map(meeting => ({
+            id: meeting.id,
+            name: meeting.name,
+            time: meeting.date + ' ' + meeting.time,
+            location: meeting.location
+          }))
+          this.setData({ recentActivities })
+        } else {
+          console.error('Failed to fetch meetings:', res)
+          wx.showToast({
+            title: this.data.t('fetchMeetingsFailed'),
+            icon: 'none'
+          })
+        }
+      },
+      fail: (error) => {
+        console.error('Error fetching meetings:', error)
+        wx.showToast({
+          title: this.data.t('networkError'),
+          icon: 'none'
+        })
+      }
+    })
   },
 
   onShow: function() {
@@ -59,26 +124,15 @@ Page({
     app.updateTabBarLanguage()
     this.updatePageTexts()
     this.updateNavBarTitle()
-    this.loadTempData()
   },
 
-  loadTempData: function() {
-    console.log('Loading temp data')
-    // 临时数据：最近活动
-    const recentActivities = [
-      { id: 1, name: '《百年孤独》读书会', time: '2023-05-15 19:00', location: '中央图书馆' },
-      { id: 2, name: '《1984》讨论会', time: '2023-05-22 19:30', location: '咖啡馆A' },
-      { id: 3, name: '《三体》科幻专场', time: '2023-05-29 20:00', location: '社区中心' }
-    ]
-
-    // 临时数据：热门书目
-    const popularBooks = [
-      { id: 1, name: '百年孤独', author: '加西亚·马尔克斯' },
-      { id: 2, name: '1984', author: '乔治·奥威尔' },
-      { id: 3, name: '三体', author: '刘慈欣' }
-    ]
-
-    this.setData({ recentActivities, popularBooks })
-    console.log('Temp data loaded:', { recentActivities, popularBooks })
+  onLanguageChange: function() {
+    console.log('Index page onLanguageChange called')
+    this.setData({ t: app.t.bind(app) })
+    console.log('Translation function updated:', this.data.t)
+    this.updatePageTexts()
+    this.updateNavBarTitle()
+    this.fetchBooks()
+    this.fetchMeetings()
   }
 })

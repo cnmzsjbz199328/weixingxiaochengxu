@@ -1,0 +1,12 @@
+.wx-modal-content {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.wx-modal-content p {
+  margin-bottom: 10px;
+}
+
+.wx-modal-content strong {
+  color: #007AFF;
+}

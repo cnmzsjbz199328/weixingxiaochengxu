@@ -1,22 +1,27 @@
 <view class="container">
-  <view class="user-info">
-    <view class="avatar-container">
-      <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
-    </view>
-    <text class="nickname">{{userInfo.nickName}}</text>
+  <view wx:if="{{!userInfo}}">
+    <button class="login-btn" bindtap="onLogin">微信一键登录</button>
   </view>
-  <view class="stats">
-    <view class="stat-item">
-      <text class="stat-label">{{booksReadText}}</text>
-      <text class="stat-value">{{userInfo.booksCount}}</text>
+  <view wx:else>
+    <view class="user-info">
+      <view class="avatar-container">
+        <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+      </view>
+      <text class="nickname">{{userInfo.nickName}}</text>
     </view>
-    <view class="stat-item">
-      <text class="stat-label">{{meetingsAttendedText}}</text>
-      <text class="stat-value">{{userInfo.meetingsCount}}</text>
+    <view class="stats">
+      <view class="stat-item">
+        <text class="stat-label">{{booksReadText}}</text>
+        <text class="stat-value">{{userInfo.booksCount}}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-label">{{meetingsAttendedText}}</text>
+        <text class="stat-value">{{userInfo.meetingsCount}}</text>
+      </view>
     </view>
+    <button class="profile-btn" bindtap="onEditProfile">{{editProfileText}}</button>
+    <button class="profile-btn" bindtap="onViewHistory">{{viewHistoryText}}</button>
+    <button class="profile-btn" bindtap="onSettings">{{settingsText}}</button>
+    <button class="profile-btn logout-btn" bindtap="onLogout">{{logoutText}}</button>
   </view>
-  <button class="profile-btn" bindtap="onEditProfile">{{editProfileText}}</button>
-  <button class="profile-btn" bindtap="onViewHistory">{{viewHistoryText}}</button>
-  <button class="profile-btn" bindtap="onSettings">{{settingsText}}</button>
-  <button class="profile-btn logout-btn" bindtap="onLogout">{{logoutText}}</button>
 </view>
