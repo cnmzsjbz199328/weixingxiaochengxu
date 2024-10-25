@@ -7,7 +7,10 @@ Page({
     recentActivitiesText: '',
     popularBooksText: '',
     recentActivities: [],
-    popularBooks: []
+    popularBooks: [],
+    isLoading: false,
+    hasError: false,
+    errorMessage: ''
   },
 
   onLoad: function() {
@@ -47,74 +50,87 @@ Page({
   },
 
   fetchBooks: function() {
+    this.setData({ isLoading: true, hasError: false });
     console.log('Fetching books from API')
     wx.request({
       url: `${app.globalData.apiBaseUrl}/books`,
       method: 'GET',
       success: (res) => {
         console.log('Books fetched successfully:', res.data)
-        if (res.statusCode === 200 && res.data.results) {
-          // 获取前10本书作为热门书目
-          const popularBooks = res.data.results.slice(0, 10).map(book => ({
+        // 直接使用 res.data，因为它已经是数组了
+        if (res.data && Array.isArray(res.data)) {
+          const popularBooks = res.data.map(book => ({
             id: book.id,
-            name: book.name,
-            author: book.author
-          }))
-          this.setData({ popularBooks })
+            name: book.name || '未知书名',
+            author: book.author || '未知作者'
+          }));
+          console.log('Processed books:', popularBooks);
+          this.setData({ 
+            popularBooks,
+            isLoading: false
+          });
         } else {
-          console.error('Failed to fetch books:', res)
-          wx.showToast({
-            title: this.data.t('fetchBooksFailed'),
-            icon: 'none'
-          })
+          console.error('Invalid books data format:', res.data)
+          this.setData({ 
+            hasError: true,
+            errorMessage: this.data.t('fetchBooksFailed'),
+            isLoading: false
+          });
         }
       },
       fail: (error) => {
         console.error('Error fetching books:', error)
-        wx.showToast({
-          title: this.data.t('networkError'),
-          icon: 'none'
-        })
+        this.setData({ 
+          hasError: true,
+          errorMessage: this.data.t('networkError'),
+          isLoading: false
+        });
       }
     })
   },
 
   fetchMeetings: function() {
+    this.setData({ isLoading: true, hasError: false });
     console.log('Fetching meetings from API')
     wx.request({
       url: `${app.globalData.apiBaseUrl}/meetings`,
       method: 'GET',
       success: (res) => {
         console.log('Meetings fetched successfully:', res.data)
-        if (res.statusCode === 200 && res.data.results) {
-          const currentDate = new Date().toISOString().split('T')[0]; // 获取当前日期
-          // 过滤并排序未来的会议
-          const futureMeetings = res.data.results
+        // 直接使用 res.data，因为它已经是数组了
+        if (res.data && Array.isArray(res.data)) {
+          const currentDate = new Date().toISOString().split('T')[0];
+          const recentActivities = res.data
             .filter(meeting => meeting.date >= currentDate)
-            .sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
-          
-          // 获取前5个未来会议作为最近活动
-          const recentActivities = futureMeetings.slice(0, 5).map(meeting => ({
-            id: meeting.id,
-            name: meeting.name,
-            time: meeting.date + ' ' + meeting.time,
-            location: meeting.location
-          }))
-          this.setData({ recentActivities })
+            .sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time))
+            .slice(0, 5)
+            .map(meeting => ({
+              id: meeting.id,
+              name: meeting.name || '未知会议',
+              time: `${meeting.date} ${meeting.time}`,
+              location: meeting.location || '地点待定'
+            }));
+          console.log('Processed meetings:', recentActivities);
+          this.setData({ 
+            recentActivities,
+            isLoading: false
+          });
         } else {
-          console.error('Failed to fetch meetings:', res)
-          wx.showToast({
-            title: this.data.t('fetchMeetingsFailed'),
-            icon: 'none'
-          })
+          console.error('Invalid meetings data format:', res.data)
+          this.setData({ 
+            hasError: true,
+            errorMessage: this.data.t('fetchMeetingsFailed'),
+            isLoading: false
+          });
         }
       },
       fail: (error) => {
         console.error('Error fetching meetings:', error)
-        wx.showToast({
-          title: this.data.t('networkError'),
-          icon: 'none'
-        })
+        this.setData({ 
+          hasError: true,
+          errorMessage: this.data.t('networkError'),
+          isLoading: false
+        });
       }
     })
   },

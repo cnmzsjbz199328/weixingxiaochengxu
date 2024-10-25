@@ -101,17 +101,23 @@ App({
     return new Promise((resolve, reject) => {
       wx.login({
         success: res => {
+          console.log('wx.login success, code:', res.code);
           if (res.code) {
-            console.log("wx.login 成功，code:", res.code);
-            console.log('Sending login request to server');
+            // 使用 mock_ 前缀来触发后端的模拟登录逻辑
+            const mockCode = "mock_" + res.code;
+            console.log('Using mock code:', mockCode);
+            
             wx.request({
               url: `${this.globalData.apiBaseUrl}/login`,
               method: 'POST',
+              header: {
+                'Content-Type': 'application/json'
+              },
               data: {
-                code: res.code
+                code: mockCode  // 使用带有 mock_ 前缀的 code
               },
               success: (res) => {
-                console.log('Server response:', res);
+                console.log('Server login response:', res);
                 if (res.statusCode === 200 && res.data) {
                   console.log('Login successful, user data:', res.data);
                   this.globalData.userInfo = res.data;
@@ -119,22 +125,22 @@ App({
                   resolve(res.data);
                 } else {
                   console.error('Login failed, server response:', res);
-                  reject('登录失败');
+                  reject('登录失败: ' + JSON.stringify(res.data));
                 }
               },
               fail: (error) => {
                 console.error('Network request failed:', error);
-                reject('网络请求失败');
+                reject('网络请求失败: ' + JSON.stringify(error));
               }
             });
           } else {
-            console.error("wx.login 成功但未获取到 code，错误信息:", res.errMsg);
+            console.error('Failed to get login code:', res);
             reject('获取用户登录凭证失败：' + res.errMsg);
           }
         },
         fail: (error) => {
-          console.error("wx.login 调用失败，错误信息:", error);
-          reject('微信登录失败');
+          console.error('wx.login failed:', error);
+          reject('微信登录失败: ' + JSON.stringify(error));
         }
       });
     });

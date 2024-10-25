@@ -3,280 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book and User Management</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+    <title>Adelaide Reading API Test - WeChat Login</title>
+    <script>
+        async function weChatLogin() {
+            console.log("Login button clicked");
+
+            // 模拟获取微信登录 code
+            const mockCode = "mock_wechat_login_code";
+            console.log("Mock login code generated:", mockCode);
+
+            // 准备请求体数据
+            const requestBody = {
+                code: mockCode
+            };
+
+            try {
+                console.log("Sending login request to the server...");
+                const response = await fetch("https://adelaide-reading-api.tj15982183241.workers.dev/api/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "*"
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                console.log("Response received from server:", response);
+
+                // 解析响应体
+                if (response.ok) {
+                    const responseData = await response.json();
+                    console.log("Login successful. User data:", responseData);
+                    document.getElementById("loginResult").innerText = "Login successful! User data: " + JSON.stringify(responseData);
+                } else {
+                    const errorData = await response.json();
+                    console.error("Error during login:", errorData);
+                    document.getElementById("loginResult").innerText = "Login failed. Error: " + JSON.stringify(errorData);
+                }
+            } catch (error) {
+                console.error("Fetch error during login:", error);
+                document.getElementById("loginResult").innerText = "Login failed. Fetch error: " + error.message;
+            }
         }
-        label, input, button {
-            display: block;
-            margin-bottom: 10px;
-        }
-        #books, #users {
-            margin-top: 20px;
-        }
-        .book, .user {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-    </style>
+    </script>
 </head>
 <body>
-    <h1>Book and User Management</h1>
-
-    <section>
-        <h2>Add a Book</h2>
-        <label for="name">Name:</label>
-        <input type="text" id="name" placeholder="Book Name">
-
-        <label for="author">Author:</label>
-        <input type="text" id="author" placeholder="Author Name">
-
-        <label for="abstract">Abstract:</label>
-        <input type="text" id="abstract" placeholder="Short Description">
-
-        <label for="createdBy">Created By:</label>
-        <input type="text" id="createdBy" placeholder="Your Name">
-
-        <button onclick="addBook()">Add Book</button>
-        <button onclick="addSampleBook()">Add Sample Book (Hardcoded)</button>
-    </section>
-
-    <section id="books">
-        <h2>Books List</h2>
-        <button onclick="getBooks()">Fetch Books</button>
-        <div id="book-list"></div>
-    </section>
-
-    <section>
-        <h2>Add a User</h2>
-        <label for="openid">OpenID:</label>
-        <input type="text" id="openid" placeholder="User OpenID">
-
-        <label for="nickname">Nickname:</label>
-        <input type="text" id="nickname" placeholder="User Nickname">
-
-        <label for="avatarUrl">Avatar URL:</label>
-        <input type="text" id="avatarUrl" placeholder="Avatar URL">
-
-        <button onclick="addUser()">Add User</button>
-    </section>
-
-    <section id="users">
-        <h2>Users List</h2>
-        <button onclick="getUsers()">Fetch Users</button>
-        <div id="user-list"></div>
-    </section>
+    <h1>Adelaide Reading API Test - WeChat Login</h1>
+    <button onclick="weChatLogin()">WeChat Login (Mock)</button>
+    <p id="loginResult"></p>
 
     <script>
-        async function addBook() {
-            const name = document.getElementById('name').value;
-            const author = document.getElementById('author').value;
-            const abstract = document.getElementById('abstract').value;
-            const createdBy = document.getElementById('createdBy').value;
-
-            if (!name || !author || !abstract || !createdBy) {
-                alert("All fields are required");
-                return;
-            }
-
-            const bookData = {
-                name,
-                author,
-                abstract,
-                createdBy
-            };
-
-            try {
-                const response = await fetch('https://adelaide-reading-api.tj15982183241.workers.dev/api/books', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(bookData)
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Error adding book:', response.status, errorText);
-                    alert(`Failed to add book: ${response.status} - ${errorText}`);
-                    return;
-                }
-
-                const result = await response.json();
-                alert(result.message);
-            } catch (error) {
-                console.error('Error adding book:', error);
-                alert('Failed to add book');
-            }
-        }
-
-        async function addSampleBook() {
-            const bookData = {
-                name: "Sample Book",
-                author: "John Doe",
-                abstract: "This is a sample book for testing purposes.",
-                createdBy: "tom" // Replace with an existing user to satisfy FOREIGN KEY constraint
-            };
-
-            try {
-                console.log("Proceeding to add sample book...");
-                const response = await fetch('https://adelaide-reading-api.tj15982183241.workers.dev/api/books', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(bookData)
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Error adding book:', response.status, errorText);
-                    alert(`Failed to add sample book: ${response.status} - ${errorText}`);
-                    return;
-                }
-
-                const result = await response.json();
-                alert(result.message);
-            } catch (error) {
-                console.error('Error adding sample book:', error);
-                alert('Failed to add sample book');
-            }
-        }
-
-        async function getBooks() {
-            try {
-                const response = await fetch('https://adelaide-reading-api.tj15982183241.workers.dev/api/books', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Error fetching books:', response.status, errorText);
-                    alert(`Failed to fetch books: ${response.status} - ${errorText}`);
-                    return;
-                }
-
-                const data = await response.json();
-                const books = data.results;
-
-                const bookList = document.getElementById('book-list');
-                bookList.innerHTML = '';
-
-                books.forEach(book => {
-                    const bookDiv = document.createElement('div');
-                    bookDiv.classList.add('book');
-                    bookDiv.innerHTML = `
-                        <strong>Name:</strong> ${book.name}<br>
-                        <strong>Author:</strong> ${book.author}<br>
-                        <strong>Abstract:</strong> ${book.abstract}<br>
-                        <strong>Created By:</strong> ${book.createdBy}<br>
-                        <strong>Created At:</strong> ${new Date(book.createdAt).toLocaleString()}<br>
-                    `;
-                    bookList.appendChild(bookDiv);
-                });
-            } catch (error) {
-                console.error('Error fetching books:', error);
-                alert('Failed to fetch books');
-            }
-        }
-
-        async function addUser() {
-            const openid = document.getElementById('openid').value;
-            const nickname = document.getElementById('nickname').value;
-            const avatarUrl = document.getElementById('avatarUrl').value;
-            const joinDate = new Date().toISOString(); // 使用当前日期作为加入日期
-            const booksRead = 0; // 默认值
-            const meetingsAttended = 0; // 默认值
-
-            if (!openid || !nickname) {
-                alert('OpenID and Nickname are required!');
-                return;
-            }
-
-            const userData = {
-                openid,
-                nickname,
-                avatarUrl,
-                joinDate,
-                booksRead,
-                meetingsAttended
-            };
-
-            try {
-                const response = await fetch('https://adelaide-reading-api.tj15982183241.workers.dev/api/users', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(userData)
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`${response.status} - ${errorText}`);
-                }
-
-                const result = await response.json();
-                alert(result.message);
-                // Clear input fields after successful addition
-                document.getElementById('openid').value = '';
-                document.getElementById('nickname').value = '';
-                document.getElementById('avatarUrl').value = '';
-                // Refresh the user list
-                getUsers();
-            } catch (error) {
-                console.error('Error adding user:', error);
-                alert(`Failed to add user: ${error.message}`);
-            }
-        }
-
-        async function getUsers() {
-            try {
-                const response = await fetch('https://adelaide-reading-api.tj15982183241.workers.dev/api/users', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`${response.status} - ${errorText}`);
-                }
-
-                const data = await response.json();
-                const users = data.results;
-
-                const userList = document.getElementById('user-list');
-                userList.innerHTML = '';
-
-                if (users.length === 0) {
-                    userList.innerHTML = '<p>No users found.</p>';
-                    return;
-                }
-
-                users.forEach(user => {
-                    const userDiv = document.createElement('div');
-                    userDiv.classList.add('user');
-                    userDiv.innerHTML = `
-                        <strong>OpenID:</strong> ${user.openid}<br>
-                        <strong>Nickname:</strong> ${user.nickName}<br>
-                        <strong>Avatar URL:</strong> ${user.avatarUrl || 'N/A'}<br>
-                        <strong>Join Date:</strong> ${new Date(user.joinDate).toLocaleString()}<br>
-                    `;
-                    userList.appendChild(userDiv);
-                });
-            } catch (error) {
-                console.error('Error fetching users:', error);
-                alert(`Failed to fetch users: ${error.message}`);
-            }
-        }
+        // 页面加载时的日志
+        console.log("Test page loaded. Ready for interaction.");
     </script>
 </body>
 </html>

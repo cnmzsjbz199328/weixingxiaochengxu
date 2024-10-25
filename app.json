@@ -3,10 +3,7 @@
       "pages/index/index",
       "pages/booklist/booklist",
       "pages/meetinglist/meetinglist",
-      "pages/profile/profile",
-      "pages/settings/settings",
-      "pages/createbook/createbook",
-      "pages/createmeeting/createmeeting"
+      "pages/profile/profile"
     ],
     "window": {
       "backgroundTextStyle": "light",
@@ -15,6 +12,10 @@
       "navigationBarTextStyle": "black"
     },
     "tabBar": {
+      "color": "#8a8a8a",
+      "selectedColor": "#1296db",
+      "backgroundColor": "#ffffff",
+      "borderStyle": "black",
       "list": [
         {
           "pagePath": "pages/index/index",
@@ -36,4 +37,4 @@
     },
     "style": "v2",
     "sitemapLocation": "sitemap.json"
-  }
+}

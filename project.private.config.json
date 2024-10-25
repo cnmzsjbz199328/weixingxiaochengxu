@@ -1,6 +1,7 @@
 {
   "projectname": "weixintest",
   "setting": {
-    "compileHotReLoad": false
+    "compileHotReLoad": false,
+    "urlCheck": false
   }
 }

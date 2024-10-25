@@ -114,28 +114,32 @@ Page({
 
   checkLogin: function() {
     console.log('Checking login status');
-    const userInfo = wx.getStorageSync('userInfo');
-    if (userInfo) {
-      console.log('User is logged in:', userInfo);
-      app.globalData.userInfo = userInfo;
-      this.setData({
-        userInfo: userInfo
-      });
-    } else {
-      console.log('User is not logged in');
-    }
+    // 清除之前的登录信息
+    wx.removeStorageSync('userInfo');
+    this.setData({
+      userInfo: null
+    });
   },
 
   onLogin: function() {
     console.log('Login button clicked');
+    wx.showLoading({
+      title: '登录中...',
+    });
+    
     app.login().then(userInfo => {
-      console.log('Login successful, updating UI');
+      console.log('Login successful, updating UI with user info:', userInfo);
       this.setData({
         userInfo: userInfo
       });
-      console.log('UI updated with user info:', userInfo);
+      wx.hideLoading();
+      wx.showToast({
+        title: '登录成功',
+        icon: 'success'
+      });
     }).catch(error => {
       console.error('Login failed:', error);
+      wx.hideLoading();
       wx.showToast({
         title: '登录失败，请重试',
         icon: 'none'

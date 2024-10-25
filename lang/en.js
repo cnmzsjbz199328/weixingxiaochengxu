@@ -70,5 +70,10 @@ export default {
   searchMeetings: 'Search meetings',
   logoutConfirmation: 'Are you sure you want to log out?',
   logoutSuccess: 'Logged out successfully',
-  logoutFailed: 'Logout failed, please try again'
+  logoutFailed: 'Logout failed, please try again',
+  fetchBooksFailed: 'Failed to fetch books',
+  fetchMeetingsFailed: 'Failed to fetch meetings',
+  networkError: 'Network error, please try again later',
+  noBooks: 'No books available',
+  noUpcomingActivities: 'No upcoming activities'
 }

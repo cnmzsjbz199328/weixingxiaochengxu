@@ -55,5 +55,10 @@ export default {
   searchMeetings: '搜索会议',
   logoutConfirmation: '确定要退出登录吗？',
   logoutSuccess: '已成功退出登录',
-  logoutFailed: '退出登录失败，请重试'
+  logoutFailed: '退出登录失败，请重试',
+  fetchBooksFailed: '获取书目失败',
+  fetchMeetingsFailed: '获取会议失败',
+  networkError: '网络错误，请稍后再试',
+  noBooks: '暂无书目',
+  noUpcomingActivities: '暂无即将举行的活动'
 }

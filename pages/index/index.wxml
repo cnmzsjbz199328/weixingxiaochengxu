@@ -1,18 +1,21 @@
 <view class="container">
-  <view class="header">
-    <text class="title">{{welcomeText}}</text>
+  <view wx:if="{{hasError}}" class="error-message">
+    {{errorMessage}}
   </view>
   <view class="section">
     <text class="section-title">{{recentActivitiesText}}</text>
     <view class="activity-list">
-      <view wx:if="{{recentActivities.length === 0}}" class="no-activities">
+      <view wx:if="{{isLoading}}" class="loading">加载中...</view>
+      <view wx:elif="{{!recentActivities || recentActivities.length === 0}}" class="no-activities">
         {{t('noUpcomingActivities')}}
       </view>
-      <view wx:for="{{recentActivities}}" wx:key="id" class="activity-item">
-        <view class="activity-name">{{item.name}}</view>
-        <view class="activity-details">
-          <text class="activity-time">{{item.time}}</text>
-          <text class="activity-location">{{item.location}}</text>
+      <view wx:else>
+        <view wx:for="{{recentActivities}}" wx:key="id" class="activity-item">
+          <view class="activity-name">{{item.name}}</view>
+          <view class="activity-details">
+            <text class="activity-time">{{item.time}}</text>
+            <text class="activity-location">{{item.location}}</text>
+          </view>
         </view>
       </view>
     </view>
@@ -20,9 +23,15 @@
   <view class="section">
     <text class="section-title">{{popularBooksText}}</text>
     <view class="book-list">
-      <view wx:for="{{popularBooks}}" wx:key="id" class="book-item">
-        <view class="book-name">{{item.name}}</view>
-        <view class="book-author">{{item.author}}</view>
+      <view wx:if="{{isLoading}}" class="loading">加载中...</view>
+      <view wx:elif="{{!popularBooks || popularBooks.length === 0}}" class="no-books">
+        {{t('noBooks')}}
+      </view>
+      <view wx:else>
+        <view wx:for="{{popularBooks}}" wx:key="id" class="book-item">
+          <view class="book-name">{{item.name}}</view>
+          <view class="book-author">{{item.author}}</view>
+        </view>
       </view>
     </view>
   </view>

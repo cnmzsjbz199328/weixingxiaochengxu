@@ -5,18 +5,18 @@
   <view wx:else>
     <view class="user-info">
       <view class="avatar-container">
-        <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+        <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
       </view>
-      <text class="nickname">{{userInfo.nickName}}</text>
+      <text class="nickname">{{userInfo.nickName || '未知用户'}}</text>
     </view>
     <view class="stats">
       <view class="stat-item">
         <text class="stat-label">{{booksReadText}}</text>
-        <text class="stat-value">{{userInfo.booksCount}}</text>
+        <text class="stat-value">{{userInfo.booksRead || 0}}</text>
       </view>
       <view class="stat-item">
         <text class="stat-label">{{meetingsAttendedText}}</text>
-        <text class="stat-value">{{userInfo.meetingsCount}}</text>
+        <text class="stat-value">{{userInfo.meetingsAttended || 0}}</text>
       </view>
     </view>
     <button class="profile-btn" bindtap="onEditProfile">{{editProfileText}}</button>
