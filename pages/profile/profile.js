@@ -1,5 +1,6 @@
 // pages/profile/profile.js
 const app = getApp()
+const logger = require('../../utils/logger')  // 添加 logger 引用
 
 Page({
 
@@ -8,6 +9,10 @@ Page({
    */
   data: {
     userInfo: null,
+    isRegistering: false,
+    email: '',
+    password: '',
+    nickname: '',
     t: {}, // 用于存储翻译函数
     booksReadText: '',
     meetingsAttendedText: '',
@@ -20,35 +25,36 @@ Page({
   /**
    * Lifecycle function--Called when page load
    */
-  onLoad(options) {
+  onLoad: function() {
     console.log('Profile page loaded')
-    this.setData({ t: app.t.bind(app) })
+    this.setData({ 
+        t: app.t.bind(app),
+        userInfo: app.globalData.userInfo
+    })
     console.log('Translation function set:', this.data.t)
     this.updatePageTexts()
     this.updateNavBarTitle()
-    this.checkLogin()
   },
 
   updatePageTexts: function() {
-    console.log('Updating profile page texts')
-    const booksReadText = this.data.t('booksRead')
-    const meetingsAttendedText = this.data.t('meetingsAttended')
-    const editProfileText = this.data.t('editProfile')
-    const viewHistoryText = this.data.t('viewHistory')
-    const settingsText = this.data.t('settings')
-    const logoutText = this.data.t('logout')
-    
-    console.log('Translated texts:', { booksReadText, meetingsAttendedText, editProfileText, viewHistoryText, settingsText, logoutText })
-    
+    console.log('Updating page texts')
     this.setData({
-      booksReadText,
-      meetingsAttendedText,
-      editProfileText,
-      viewHistoryText,
-      settingsText,
-      logoutText
+        booksReadText: this.data.t('booksRead'),
+        meetingsAttendedText: this.data.t('meetingsAttended'),
+        editProfileText: this.data.t('editProfile'),
+        viewHistoryText: this.data.t('viewHistory'),
+        settingsText: this.data.t('settings'),
+        logoutText: this.data.t('logout'),
+        // 添加登录相关的文本
+        welcomeLoginText: this.data.t('welcomeLogin'),
+        loginText: this.data.t('login'),
+        registerText: this.data.t('register'),
+        noAccountText: this.data.t('noAccount'),
+        registerNowText: this.data.t('registerNow'),
+        hasAccountText: this.data.t('hasAccount'),
+        loginNowText: this.data.t('loginNow')
     })
-    console.log('Profile page texts updated:', this.data)
+    console.log('Page texts updated:', this.data)
   },
 
   updateNavBarTitle: function() {
@@ -114,37 +120,92 @@ Page({
 
   checkLogin: function() {
     console.log('Checking login status');
-    // 清除之前的登录信息
-    wx.removeStorageSync('userInfo');
-    this.setData({
-      userInfo: null
-    });
+    if (app.checkSession()) {
+      this.setData({
+        userInfo: app.globalData.userInfo
+      });
+      console.log('Valid session found. User info set:', this.data.userInfo);
+      console.log('User ID:', this.data.userInfo.id); // 新增
+    } else {
+      console.log('No valid session, clearing user info');
+      this.setData({
+        userInfo: null
+      });
+    }
   },
 
   onLogin: function() {
-    console.log('Login button clicked');
-    wx.showLoading({
-      title: '登录中...',
-    });
+    const { email, password } = this.data;
     
-    app.login().then(userInfo => {
-      console.log('Login successful, updating UI with user info:', userInfo);
-      this.setData({
-        userInfo: userInfo
-      });
-      wx.hideLoading();
+    if (!email || !password) {
       wx.showToast({
-        title: '登录成功',
-        icon: 'success'
-      });
-    }).catch(error => {
-      console.error('Login failed:', error);
-      wx.hideLoading();
-      wx.showToast({
-        title: '登录失败，请重试',
+        title: 'Please fill in all fields',
         icon: 'none'
       });
+      return;
+    }
+
+    logger.info('Starting login process');
+    wx.showLoading({
+      title: 'Logging in...',
     });
+    
+    // 添加日志来检查发送的数据
+    console.log('Sending login request with:', {
+      emailOrNickName: email,
+      password: password
+    });
+    
+    app.login(email, password)
+      .then(userInfo => {
+        console.log('Login response:', userInfo); // 添加日志
+        logger.info('Login successful, user info:', userInfo);
+        
+        // 检查返回的数据是否包含必要字段
+        if (!userInfo || !userInfo.id) {
+          logger.error('Missing required user data fields:', userInfo);
+          throw new Error('Incomplete user data');
+        }
+
+        this.setData({
+          userInfo: userInfo,
+          email: '',
+          password: ''
+        });
+
+        // 保存完整的用户信息到全局
+        app.globalData.userInfo = userInfo;
+        
+        wx.hideLoading();
+        wx.showToast({
+          title: 'Login successful',
+          icon: 'success'
+        });
+
+        logger.info('User data saved:', {
+          id: userInfo.id,
+          email: userInfo.email,
+          nickName: userInfo.nickName
+        });
+      })
+      .catch(error => {
+        console.error('Login error:', error); // 添加详细错误日志
+        logger.error('Login failed:', error);
+        wx.hideLoading();
+        
+        let errorMessage = 'Login failed, please try again';
+        if (error.message === 'Incomplete user data') {
+          errorMessage = 'Server data error, please contact support';
+        } else if (error.message.includes('用户不存在')) {
+          errorMessage = 'User does not exist or incorrect password';
+        }
+        
+        wx.showToast({
+          title: errorMessage,
+          icon: 'none',
+          duration: 2000
+        });
+      });
   },
 
   onEditProfile: function() {
@@ -233,6 +294,93 @@ Page({
     } else {
       console.log('No user info found, attempting to login');
       this.onLogin();
+    }
+  },
+
+  // 切换到注册界面
+  switchToRegister: function() {
+    this.setData({ isRegistering: true });
+  },
+
+  // 切换登录界面
+  switchToLogin: function() {
+    this.setData({ isRegistering: false });
+  },
+
+  // 处理输入
+  onInputChange: function(e) {
+    const { field } = e.currentTarget.dataset;
+    this.setData({
+      [field]: e.detail.value
+    });
+  },
+
+  // 注册
+  onRegister: async function() {
+    const { email, password, nickname } = this.data;
+    
+    if (!email || !password || !nickname) {
+      wx.showToast({
+        title: 'Please fill in all fields',
+        icon: 'none'
+      });
+      return;
+    }
+
+    wx.showLoading({ title: 'Registering...' });
+
+    // 打印请求数据
+    console.log('Register request data:', {
+      email,
+      nickName: nickname,
+      password
+    });
+
+    try {
+      const response = await app.request({
+        url: '/register',
+        method: 'POST',
+        data: { 
+          email, 
+          nickName: nickname,
+          password
+        }
+      });
+
+      console.log('Register response:', response);
+
+      wx.hideLoading();
+      wx.showToast({
+        title: 'Registration successful',
+        icon: 'success'
+      });
+
+      // 注册成功后自动登录
+      this.setData({ 
+        isRegistering: false,
+        password: '',
+        nickname: ''
+      });
+      
+      // 使用注册时的凭据直接登录
+      await this.onLogin();
+
+    } catch (error) {
+      console.error('Register error:', error);
+      wx.hideLoading();
+      
+      let errorMessage = 'Registration failed';
+      if (error.message.includes('用户已存在')) {
+        errorMessage = 'Email or nickname already exists';
+      } else if (error.statusCode === 500) {
+        errorMessage = 'Server error, please try again';
+      }
+      
+      wx.showToast({
+        title: errorMessage,
+        icon: 'none',
+        duration: 2000
+      });
     }
   }
 })

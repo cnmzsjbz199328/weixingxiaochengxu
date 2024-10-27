@@ -1,0 +1,22 @@
+<view class="container">
+  <view class="form-group">
+    <input 
+      class="input" 
+      type="text" 
+      placeholder="{{emailPlaceholder}}" 
+      bindinput="onInputChange" 
+      data-field="email"
+    />
+  </view>
+  <view class="form-group">
+    <input 
+      class="input" 
+      type="password" 
+      placeholder="{{passwordPlaceholder}}" 
+      bindinput="onInputChange" 
+      data-field="password"
+    />
+  </view>
+  <button class="login-btn" bindtap="onLogin">{{loginButtonText}}</button>
+</view>
+

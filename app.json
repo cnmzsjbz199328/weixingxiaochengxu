@@ -3,7 +3,8 @@
       "pages/index/index",
       "pages/booklist/booklist",
       "pages/meetinglist/meetinglist",
-      "pages/profile/profile"
+      "pages/profile/profile",
+      "pages/editprofile/editprofile"
     ],
     "window": {
       "backgroundTextStyle": "light",

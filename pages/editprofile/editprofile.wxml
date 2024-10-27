@@ -1,0 +1,51 @@
+<view class="container">
+  <view class="profile-form">
+    <view class="form-group">
+      <view class="avatar-section">
+        <image 
+          class="avatar" 
+          src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" 
+          mode="aspectFill"
+        />
+        <button 
+          class="change-avatar-btn" 
+          bindtap="onChooseAvatar"
+        >
+          Change Avatar
+        </button>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <view class="input-group">
+        <text class="label">Name:</text>
+        <input 
+          class="input" 
+          name="nickName" 
+          value="{{userInfo.nickName}}" 
+          placeholder="Enter your nickname"
+          bindinput="onInputChange"
+          data-field="nickName"
+        />
+        <text class="error-text" wx:if="{{errors.nickName}}">Please enter your nickname</text>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <view class="input-group">
+        <text class="label">Email:</text>
+        <input 
+          class="input" 
+          name="email" 
+          value="{{userInfo.email}}" 
+          placeholder="Enter your email"
+          bindinput="onInputChange"
+          data-field="email"
+        />
+        <text class="error-text" wx:if="{{errors.email}}">Please enter a valid email</text>
+      </view>
+    </view>
+
+    <button class="submit-btn" bindtap="onSaveProfile">Save</button>
+  </view>
+</view>

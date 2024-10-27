@@ -1,27 +1,91 @@
 <view class="container">
-  <view wx:if="{{!userInfo}}">
-    <button class="login-btn" bindtap="onLogin">微信一键登录</button>
-  </view>
-  <view wx:else>
-    <view class="user-info">
-      <view class="avatar-container">
-        <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+  <!-- 未登录状态 -->
+  <view wx:if="{{!userInfo}}" class="login-container">
+    <view class="auth-title">Welcome to Reading Club</view>
+    
+    <!-- 登录表单 -->
+    <view wx:if="{{!isRegistering}}" class="auth-form">
+      <input 
+        class="auth-input" 
+        type="text" 
+        placeholder="Email or Username" 
+        bindinput="onInputChange" 
+        data-field="email"
+      />
+      <input 
+        class="auth-input" 
+        type="password" 
+        placeholder="Password" 
+        bindinput="onInputChange" 
+        data-field="password"
+      />
+      <view class="btn-wrapper">
+        <button class="auth-btn" bindtap="onLogin">Log in</button>
       </view>
-      <text class="nickname">{{userInfo.nickName || '未知用户'}}</text>
+      <view class="switch-auth">
+        No account? 
+        <text class="switch-btn" bindtap="switchToRegister">Register Now</text>
+      </view>
     </view>
+
+    <!-- 注册表单 -->
+    <view wx:else class="auth-form">
+      <input 
+        class="auth-input" 
+        type="text" 
+        placeholder="Nickname" 
+        bindinput="onInputChange" 
+        data-field="nickname"
+      />
+      <input 
+        class="auth-input" 
+        type="text" 
+        placeholder="Email" 
+        bindinput="onInputChange" 
+        data-field="email"
+      />
+      <input 
+        class="auth-input" 
+        type="password" 
+        placeholder="Password" 
+        bindinput="onInputChange" 
+        data-field="password"
+      />
+      <view class="btn-wrapper">
+        <button class="auth-btn" bindtap="onRegister">Sign Up</button>
+      </view>
+      <view class="switch-auth">
+        Have an account? 
+        <text class="switch-btn" bindtap="switchToLogin">Login Now</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 已登录状态 -->
+  <view wx:else class="profile-container">
+    <view class="user-info">
+      <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" />
+      <text class="nickname">{{userInfo.nickName}}</text>
+    </view>
+    
     <view class="stats">
       <view class="stat-item">
-        <text class="stat-label">{{booksReadText}}</text>
-        <text class="stat-value">{{userInfo.booksRead || 0}}</text>
+        <text class="stat-number">{{userInfo.booksRead || 0}}</text>
+        <text class="stat-label">Books Read</text>
       </view>
       <view class="stat-item">
-        <text class="stat-label">{{meetingsAttendedText}}</text>
-        <text class="stat-value">{{userInfo.meetingsAttended || 0}}</text>
+        <text class="stat-number">{{userInfo.meetingsAttended || 0}}</text>
+        <text class="stat-label">Meetings Attended</text>
       </view>
     </view>
-    <button class="profile-btn" bindtap="onEditProfile">{{editProfileText}}</button>
-    <button class="profile-btn" bindtap="onViewHistory">{{viewHistoryText}}</button>
-    <button class="profile-btn" bindtap="onSettings">{{settingsText}}</button>
-    <button class="profile-btn logout-btn" bindtap="onLogout">{{logoutText}}</button>
+
+    <view class="action-list">
+      <view class="btn-wrapper">
+        <button class="action-btn" bindtap="onEditProfile">Edit Profile</button>
+        <button class="action-btn" bindtap="onViewHistory">View History</button>
+        <button class="action-btn" bindtap="onSettings">Settings</button>
+        <button class="action-btn logout" bindtap="onLogout">Log Out</button>
+      </view>
+    </view>
   </view>
 </view>

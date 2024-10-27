@@ -1,1 +1,6 @@
 # weixingxiaochengxu
+1.检查登陆后返回的数据是否包含用户booksread、meetingattend
+2.检查返回的id是否添加在session中
+
+3.书目和会议区需要利用id获取相应的数据
+4.书目和会议的新建需要利用id添加
