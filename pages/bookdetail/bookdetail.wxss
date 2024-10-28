@@ -1,0 +1,249 @@
+.container {
+  padding: 20rpx;
+  padding-bottom: 40rpx;
+}
+
+.book-detail {
+  background: #fff;
+  padding: 30rpx;
+  border-radius: 12rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+}
+
+.book-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.book-author {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
+.book-abstract {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.comment-input {
+  background: #fff;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+}
+
+.input-area {
+  width: 100%;
+  height: 160rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+  font-size: 28rpx;
+}
+
+.submit-btn {
+  background: #007AFF;
+  color: #fff;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
+
+.comments-section {
+  padding: 20rpx;
+  background: #fff;
+  margin-top: 20rpx;
+}
+
+.comments-header {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.comments-title {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.comments-list {
+  padding: 20rpx 0;
+  margin-top: 30rpx;
+  background: #fff;
+  border-radius: 8rpx;
+  border: 1rpx solid #eee;
+}
+
+.comment-item {
+  padding: 30rpx 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.user-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.comment-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.comment-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.comment-content {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+  padding: 10rpx 0;
+}
+
+.comment-input-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx;
+  background: #fff;
+  box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.1);
+}
+
+.comment-input-area {
+  background: #fff;
+  padding: 20rpx;
+  margin: 20rpx 0;
+  border-radius: 8rpx;
+  border: 1rpx solid #eee;
+}
+
+.comment-input {
+  width: 100%;
+  height: 160rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  background: #f9f9f9;
+}
+
+.comment-tools {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20rpx;
+}
+
+.char-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.submit-btn {
+  width: 180rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  font-size: 28rpx;
+  background: #07c160;
+  color: #fff;
+  border-radius: 32rpx;
+  padding: 0;
+  margin: 0;
+}
+
+.submit-btn.disabled {
+  background: #ccc;
+  pointer-events: none;
+}
+
+.no-comments {
+  text-align: center;
+  color: #999;
+  padding: 40rpx 0;
+}
+
+/* 更新书籍详情样式 */
+.book-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20rpx;
+}
+
+.book-meta {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.book-author {
+  font-size: 28rpx;
+  color: #666;
+  margin-right: 20rpx;
+}
+
+.book-status {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  color: #fff;
+}
+
+.status-reading {
+  background-color: #07c160;
+}
+
+.status-finished {
+  background-color: #1989fa;
+}
+
+.comment-count {
+  background-color: #1989fa;
+  color: white;
+  padding: 6rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+}
+
+.abstract-label {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.abstract-content {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+  display: block;
+}

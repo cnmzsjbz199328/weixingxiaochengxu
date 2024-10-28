@@ -93,3 +93,22 @@
   font-size: 16px;
   margin-top: 20px;
 }
+
+.delete-btn {
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  background-color: #6d4dff5c;
+  color: white;
+  border: none;
+  margin-left: 8px;
+  max-width: 60px;
+}
+
+.delete-btn.confirm {
+  background-color: #ff7875;
+}
+
+.delete-btn:active {
+  opacity: 0.8;
+}

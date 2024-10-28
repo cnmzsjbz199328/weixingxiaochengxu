@@ -1,6 +1,6 @@
 # weixingxiaochengxu
-1.检查登陆后返回的数据是否包含用户booksread、meetingattend
-2.检查返回的id是否添加在session中
+1.当我点击上传头像时，调用后端API接口上传头像，并返回头像路径
+2.头像路径设置为userInfo.avatarUrl
+3.当我点击保存时，需要将userInfo的数据发送给后端以更新用户信息
+4.profile与editProfile中关于头像的硬编码也会被替换
 
-3.书目和会议区需要利用id获取相应的数据
-4.书目和会议的新建需要利用id添加

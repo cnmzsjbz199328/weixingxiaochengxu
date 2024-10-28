@@ -7,13 +7,19 @@
     </view>
   </view>
   <view class="meeting-list">
-    <view wx:for="{{filteredMeetings}}" wx:key="id" class="meeting-item">
+    <view class="meeting-item" wx:for="{{filteredMeetings}}" wx:key="id">
       <view class="meeting-info">
         <text class="meeting-name">{{item.name}}</text>
-        <text class="meeting-date">{{dateText}}: {{item.date}}</text>
-        <text class="meeting-time">{{timeText}}: {{item.time}}</text>
+        <text class="meeting-time">{{dateText}}: {{item.date}} {{timeText}}: {{item.time}}</text>
         <text class="meeting-location">{{locationText}}: {{item.location}}</text>
       </view>
+      <button 
+        class="delete-btn {{item.confirmDelete ? 'confirm' : ''}}" 
+        bindtap="onDeleteMeeting" 
+        data-id="{{item.id}}"
+      >
+        {{item.confirmDelete ? 'Sure?' : 'Delete'}}
+      </button>
     </view>
   </view>
   <button class="add-meeting-btn" bindtap="onAddMeeting">{{addMeetingText}}</button>

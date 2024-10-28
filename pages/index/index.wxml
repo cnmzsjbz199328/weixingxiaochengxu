@@ -1,38 +1,49 @@
 <view class="container">
-  <view wx:if="{{hasError}}" class="error-message">
-    {{errorMessage}}
-  </view>
+  
   <view class="section">
     <text class="section-title">{{recentActivitiesText}}</text>
     <view class="activity-list">
-      <view wx:if="{{isLoading}}" class="loading">加载中...</view>
-      <view wx:elif="{{!recentActivities || recentActivities.length === 0}}" class="no-activities">
-        {{t('noUpcomingActivities')}}
-      </view>
-      <view wx:else>
-        <view wx:for="{{recentActivities}}" wx:key="id" class="activity-item">
-          <view class="activity-name">{{item.name}}</view>
-          <view class="activity-details">
-            <text class="activity-time">{{item.time}}</text>
-            <text class="activity-location">{{item.location}}</text>
+      <block wx:if="{{!isLoading && !hasError && recentActivities.length > 0}}">
+        <view class="activity-item" wx:for="{{recentActivities}}" wx:key="id">
+          <view class="activity-info">
+            <view class="activity-name">{{item.name}}</view>
+            <view class="activity-details">
+              <text>{{item.time}}</text>
+              <text>{{item.location}}</text>
+              <text>已报名: {{item.signupCount}}</text>
+            </view>
           </view>
+          <button 
+            class="participate-btn {{item.isParticipating ? 'active' : 'inactive'}}"
+            data-id="{{item.id}}"
+            bindtap="toggleParticipation">
+            {{item.isParticipating ? 'joined' : 'join'}}
+          </button>
         </view>
+      </block>
+      <view wx:if="{{!isLoading && !hasError && recentActivities.length === 0}}" class="no-activities">
+        暂无活动
+      </view>
+      <view wx:if="{{hasError}}" class="error-message">
+        {{errorMessage}}
       </view>
     </view>
   </view>
+  
   <view class="section">
     <text class="section-title">{{popularBooksText}}</text>
-    <view class="book-list">
-      <view wx:if="{{isLoading}}" class="loading">加载中...</view>
-      <view wx:elif="{{!popularBooks || popularBooks.length === 0}}" class="no-books">
-        {{t('noBooks')}}
+    <scroll-view class="books-scroll-view" scroll-x="true" enhanced show-scrollbar="false">
+      <view class="books-container">
+        <block wx:if="{{!isLoading && !hasError && popularBooks.length > 0}}">
+          <view class="book-card" wx:for="{{popularBooks}}" wx:key="id" bindtap="onBookDetail" data-id="{{item.id}}">
+            <view class="book-cover">
+              <view class="book-spine"></view>
+              <view class="book-title">{{item.name}}</view>
+              <view class="book-author">{{item.author}}</view>
+            </view>
+          </view>
+        </block>
       </view>
-      <view wx:else>
-        <view wx:for="{{popularBooks}}" wx:key="id" class="book-item">
-          <view class="book-name">{{item.name}}</view>
-          <view class="book-author">{{item.author}}</view>
-        </view>
-      </view>
-    </view>
+    </scroll-view>
   </view>
 </view>

@@ -55,21 +55,83 @@ Page({
     })
   },
 
-  fetchMeetings: function() {
+  fetchMeetings: async function() {
     console.log('Fetching meetings')
-    // 这里应该是从服务器获取读书会数据的逻辑
-    // 暂时使用模拟数据，但在实际应用中，这里应该是一个API调用
-    const meetings = [
-      { id: 1, name: '《百年孤独》读书会', date: '2023-05-15', time: '19:00', location: '中央图书馆' },
-      { id: 2, name: '《1984》讨论会', date: '2023-05-22', time: '19:30', location: '咖啡馆A' },
-      { id: 3, name: '《三体》科幻专场', date: '2023-05-29', time: '20:00', location: '社区中心' }
-    ];
+    
+    // 获取用户ID
+    const userInfo = app.globalData.userInfo;
+    if (!userInfo || !userInfo.id) {
+      console.error('No user info found');
+      wx.showToast({
+        title: this.data.t('pleaseLogin'),
+        icon: 'none'
+      });
+      return;
+    }
 
-    this.setData({ 
-      meetings,
-      filteredMeetings: meetings
-    })
-    console.log('Meetings fetched:', meetings)
+    try {
+      const response = await new Promise((resolve, reject) => {
+        wx.request({
+          url: `${app.globalData.apiBaseUrl}/user/meetings?userId=${userInfo.id}`,
+          method: 'GET',
+          header: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userInfo.id.toString()
+          },
+          success: (res) => {
+            if (res.statusCode === 200) {
+              resolve(res);
+            } else {
+              reject(new Error(`HTTP ${res.statusCode}`));
+            }
+          },
+          fail: reject
+        });
+      });
+
+      if (response.statusCode === 200) {
+        const meetings = Array.isArray(response.data) ? response.data : [];
+        // 添加参与状态标记
+        const meetingsWithParticipation = meetings.map(meeting => ({
+          ...meeting,
+          isParticipating: false // 默认未参与
+        }));
+        
+        // 获取用户参与的会议列表
+        const participatingResponse = await wx.request({
+          url: `${app.globalData.apiBaseUrl}/user/meetings/participating?userId=${userInfo.id}`,
+          method: 'GET',
+          header: {
+            'X-User-ID': userInfo.id.toString()
+          }
+        });
+
+        if (participatingResponse.statusCode === 200) {
+          const participatingMeetings = new Set(participatingResponse.data.map(m => m.id));
+          meetingsWithParticipation.forEach(meeting => {
+            meeting.isParticipating = participatingMeetings.has(meeting.id);
+          });
+        }
+
+        this.setData({ 
+          meetings: meetingsWithParticipation,
+          filteredMeetings: meetingsWithParticipation
+        });
+      } else {
+        throw new Error(`Server returned ${response.statusCode}`);
+      }
+    } catch (error) {
+      console.error('Fetch meetings error:', error);
+      let errorMessage = this.data.t('fetchFailed');
+      if (error.message === 'Unauthorized') {
+        errorMessage = this.data.t('pleaseLogin');
+        app.clearSession();
+      }
+      wx.showToast({
+        title: errorMessage,
+        icon: 'none'
+      });
+    }
   },
 
   onSearchInput: function(e) {
@@ -125,5 +187,155 @@ Page({
     this.updatePageTexts()
     this.updateNavBarTitle()
     this.fetchMeetings()
+  },
+
+  onDeleteMeeting: async function(e) {
+    const meetingId = e.currentTarget.dataset.id;
+    const meetings = this.data.meetings;
+    const meeting = meetings.find(m => m.id === meetingId);
+    
+    if (meeting.confirmDelete) {
+      try {
+        const userInfo = app.globalData.userInfo;
+        if (!userInfo || !userInfo.id) {
+          wx.showToast({
+            title: 'Please login first',
+            icon: 'none'
+          });
+          return;
+        }
+
+        const response = await new Promise((resolve, reject) => {
+          wx.request({
+            url: `${app.globalData.apiBaseUrl}/user/meetings/${meetingId}?userId=${userInfo.id}`,
+            method: 'DELETE',
+            header: {
+              'Content-Type': 'application/json',
+              'X-User-ID': userInfo.id.toString()
+            },
+            success: (res) => {
+              if (res.statusCode === 200 || res.statusCode === 204) {
+                resolve(res);
+              } else {
+                reject(new Error(`HTTP ${res.statusCode}`));
+              }
+            },
+            fail: reject
+          });
+        });
+
+        // 从列表中移除该会议
+        const updatedMeetings = meetings.filter(m => m.id !== meetingId);
+        this.setData({
+          meetings: updatedMeetings,
+          filteredMeetings: this.filterMeetings(updatedMeetings, this.data.searchKeyword)
+        });
+        
+        wx.showToast({
+          title: 'Delete Success',
+          icon: 'success'
+        });
+      } catch (error) {
+        console.error('Delete meeting error:', error);
+        wx.showToast({
+          title: 'Delete Failed',
+          icon: 'none'
+        });
+      }
+    } else {
+      // 设置确认状态
+      const updatedMeetings = meetings.map(m => ({
+        ...m,
+        confirmDelete: m.id === meetingId
+      }));
+      this.setData({
+        meetings: updatedMeetings,
+        filteredMeetings: this.filterMeetings(updatedMeetings, this.data.searchKeyword)
+      });
+
+      // 3秒后重置确认状态
+      setTimeout(() => {
+        const resetMeetings = this.data.meetings.map(m => ({
+          ...m,
+          confirmDelete: false
+        }));
+        this.setData({
+          meetings: resetMeetings,
+          filteredMeetings: this.filterMeetings(resetMeetings, this.data.searchKeyword)
+        });
+      }, 3000);
+    }
+  },
+
+  filterMeetings: function(meetings, searchKeyword) {
+    if (!searchKeyword) {
+      return meetings;
+    }
+    searchKeyword = searchKeyword.toLowerCase();
+    return meetings.filter(meeting => 
+      meeting.name.toLowerCase().includes(searchKeyword) || 
+      meeting.location.toLowerCase().includes(searchKeyword)
+    );
+  },
+
+  toggleParticipation: async function(e) {
+    const meetingId = e.currentTarget.dataset.id;
+    const userInfo = app.globalData.userInfo;
+    
+    if (!userInfo || !userInfo.id) {
+      wx.showToast({
+        title: 'Please login first',
+        icon: 'none'
+      });
+      return;
+    }
+
+    try {
+      const response = await new Promise((resolve, reject) => {
+        wx.request({
+          url: `${app.globalData.apiBaseUrl}/user/meetings/${meetingId}/toggle?userId=${userInfo.id}`,
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userInfo.id.toString()
+          },
+          success: (res) => {
+            if (res.statusCode === 200) {
+              resolve(res);
+            } else {
+              reject(new Error(`HTTP ${res.statusCode}`));
+            }
+          },
+          fail: reject
+        });
+      });
+
+      // 更新本地状态
+      const updatedMeetings = this.data.meetings.map(meeting => {
+        if (meeting.id === meetingId) {
+          return {
+            ...meeting,
+            isParticipating: !meeting.isParticipating
+          };
+        }
+        return meeting;
+      });
+
+      this.setData({
+        meetings: updatedMeetings,
+        filteredMeetings: this.filterMeetings(updatedMeetings, this.data.searchKeyword)
+      });
+
+      wx.showToast({
+        title: response.data.action === 'join' ? 'Joined' : 'Left',
+        icon: 'success'
+      });
+    } catch (error) {
+      console.error('Toggle participation error:', error);
+      wx.showToast({
+        title: 'Operation failed',
+        icon: 'none'
+      });
+    }
   }
 });

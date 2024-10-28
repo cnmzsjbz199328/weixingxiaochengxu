@@ -1,0 +1,63 @@
+<view class="container">
+  <!-- 书籍详情部分 -->
+  <view class="book-detail">
+    <view class="book-header">
+      <view class="book-title">{{book.name}}</view>
+    </view>
+    <view class="book-meta">
+      <text class="book-author">作者: {{book.author}}</text>
+      <text wx:if="{{book.userStatus}}" class="book-status {{book.userStatus === '在读' ? 'status-reading' : 'status-finished'}}">
+        {{book.userStatus}}
+      </text>
+    </view>
+    <view class="book-abstract">
+      <text class="abstract-label">简介:</text>
+      <text class="abstract-content">{{book.abstract || '暂无简介'}}</text>
+    </view>
+  </view>
+
+  <!-- 评论区域 -->
+  <view class="comments-section">
+    <view class="comments-header">
+      <text class="comments-title">读者评论 ({{comments.length}})</text>
+    </view>
+
+    <!-- 评论输入框移到上方 -->
+    <view class="comment-input-area">
+      <textarea 
+        class="comment-input"
+        placeholder="写下你的评论..."
+        value="{{newComment}}"
+        bindinput="onCommentInput"
+        maxlength="500"
+      />
+      <view class="comment-tools">
+        <text class="char-count">{{newComment.length}}/500</text>
+        <button 
+          class="submit-btn {{canSubmit ? '' : 'disabled'}}"
+          bindtap="submitComment"
+          disabled="{{!canSubmit}}"
+        >发表评论</button>
+      </view>
+    </view>
+
+    <!-- 评论列表 -->
+    <view class="comments-list">
+      <block wx:if="{{comments.length > 0}}">
+        <view class="comment-item" wx:for="{{comments}}" wx:key="id">
+          <view class="comment-header">
+            <image class="user-avatar" src="{{item.userAvatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+            <view class="comment-info">
+              <text class="user-name">{{item.userNickName || '匿名用户'}}</text>
+              <text class="comment-time">{{item.formattedTime}}</text>
+            </view>
+          </view>
+          <view class="comment-content">{{item.content}}</view>
+        </view>
+      </block>
+      <view wx:else class="no-comments">
+        暂无评论，来说说你的想法吧
+      </view>
+    </view>
+  </view>
+</view>

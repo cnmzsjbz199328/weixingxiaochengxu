@@ -17,6 +17,40 @@
   line-height: 24px;
 }
 
+.book-selector {
+  margin: 20px 0;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.book-list {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.book-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.book-item:last-child {
+  border-bottom: none;
+}
+
+.book-name {
+  margin-left: 10px;
+}
+
 .submit-btn {
   width: 100%;
   padding: 10px;
@@ -25,4 +59,9 @@
   border: none;
   border-radius: 4px;
   font-size: 16px;
+  margin-top: 20px;
+}
+
+.submit-btn:active {
+  opacity: 0.8;
 }

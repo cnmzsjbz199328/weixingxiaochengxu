@@ -96,5 +96,7 @@ export default {
   saveFailed: 'Save failed',
   nicknameRequired: 'Please enter nickname',
   emailRequired: 'Please enter email',
-  invalidEmail: 'Please enter a valid email address'
+  invalidEmail: 'Please enter a valid email address',
+  fetchFailed: 'Failed to fetch data',
+  pleaseLogin: 'Please login first'
 }

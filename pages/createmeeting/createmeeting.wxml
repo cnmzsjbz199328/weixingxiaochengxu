@@ -34,20 +34,20 @@
       data-field="location" 
       value="{{location}}" 
     />
-    <picker 
-      class="picker" 
-      mode="multiSelector" 
-      bindchange="onBookSelect" 
-      range="{{[books]}}" 
-      range-key="name"
-    >
-      <view class="picker-inner">
-        <block wx:if="{{selectedBooks.length > 0}}">
-          <text wx:for="{{selectedBooks}}" wx:key="*this">{{books[item].name}}{{index < selectedBooks.length - 1 ? ', ' : ''}}</text>
-        </block>
-        <text wx:else>{{selectBooksText}}</text>
-      </view>
-    </picker>
+    <view class="book-selector">
+      <text class="section-title">{{selectBooksText}}</text>
+      <checkbox-group bindchange="onBookSelect">
+        <view class="book-list">
+          <label class="book-item" wx:for="{{books}}" wx:key="id">
+            <checkbox 
+              value="{{item.id}}" 
+              checked="{{isBookSelected(item.id)}}"
+            />
+            <text class="book-name">{{item.name}}</text>
+          </label>
+        </view>
+      </checkbox-group>
+    </view>
     <button class="submit-btn" form-type="submit">{{submitText}}</button>
   </form>
 </view>

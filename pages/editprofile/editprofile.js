@@ -50,18 +50,120 @@ Page({
     return Object.keys(errors).length === 0
   },
 
-  onChooseAvatar: function() {
-    wx.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['album', 'camera'],
-      success: (res) => {
-        const tempFilePath = res.tempFilePaths[0]
-        this.setData({
-          'userInfo.avatarUrl': tempFilePath
-        })
+  onChooseAvatar: async function() {
+    try {
+      const res = await wx.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera']
+      });
+
+      const tempFilePath = res.tempFilePaths[0];
+      console.log('Selected new image:', tempFilePath);
+      
+      wx.showLoading({ title: 'Uploading...' });
+
+      // 获取旧头像的文件名（如果存在）
+      const oldAvatarUrl = this.data.userInfo.avatarUrl;
+      console.log('Old avatar URL:', oldAvatarUrl);
+      
+      let oldFileKey = null;
+      if (oldAvatarUrl && oldAvatarUrl.includes(app.globalData.r2BaseUrl)) {
+        // 从URL中提取文件名，需要包含完整的路径
+        oldFileKey = 'picture/' + oldAvatarUrl.split('picture/')[1];
+        console.log('Extracted old file key:', oldFileKey);
+      } else {
+        console.log('No old avatar from R2 storage found');
       }
-    })
+
+      // 上传新头像
+      console.log('Starting upload of new avatar...');
+      const uploadRes = await new Promise((resolve, reject) => {
+        const uploadTask = wx.uploadFile({
+          url: `${app.globalData.r2WorkerUrl}/api/upload`,
+          filePath: tempFilePath,
+          name: 'file',
+          header: {
+            'content-type': 'multipart/form-data'
+          },
+          success: resolve,
+          fail: reject
+        });
+
+        uploadTask.onProgressUpdate((res) => {
+          console.log('Upload progress:', res.progress + '%');
+        });
+      });
+
+      console.log('Upload response:', uploadRes);
+
+      if (uploadRes.statusCode === 200) {
+        let result;
+        try {
+          result = JSON.parse(uploadRes.data);
+          console.log('Parsed upload result:', result);
+        } catch (parseError) {
+          console.error('Parse response error:', parseError, 'Raw response:', uploadRes.data);
+          throw new Error('Invalid server response');
+        }
+
+        if (result && result.url) {
+          // 如果存在旧头像，删除它
+          if (oldFileKey) {
+            console.log('Attempting to delete old avatar with key:', oldFileKey);
+            try {
+              const deleteUrl = `${app.globalData.r2WorkerUrl}/api/files/${encodeURIComponent(oldFileKey)}`;
+              console.log('Delete URL:', deleteUrl);
+              
+              const deleteRes = await wx.request({
+                url: deleteUrl,
+                method: 'DELETE',
+                success: (res) => {
+                  console.log('Delete success response:', res);
+                },
+                fail: (error) => {
+                  console.error('Delete request failed:', error);
+                }
+              });
+              
+              console.log('Delete old avatar full response:', deleteRes);
+              
+              if (deleteRes.statusCode === 200) {
+                console.log('Old avatar deleted successfully');
+              } else {
+                console.warn('Delete request failed with status:', deleteRes.statusCode, 'Response:', deleteRes.data);
+              }
+            } catch (deleteError) {
+              console.error('Failed to delete old avatar. Error:', deleteError);
+            }
+          }
+
+          // 更新头像URL
+          console.log('Updating avatar URL to:', result.url);
+          this.setData({
+            'userInfo.avatarUrl': result.url
+          });
+          
+          wx.hideLoading();
+          wx.showToast({
+            title: 'Avatar uploaded',
+            icon: 'success'
+          });
+        } else {
+          throw new Error('No URL in response');
+        }
+      } else {
+        throw new Error(`Upload failed with status ${uploadRes.statusCode}`);
+      }
+    } catch (error) {
+      console.error('Avatar upload error:', error);
+      wx.hideLoading();
+      wx.showToast({
+        title: error.message || 'Upload failed',
+        icon: 'none',
+        duration: 2000
+      });
+    }
   },
 
   onSaveProfile: async function() {

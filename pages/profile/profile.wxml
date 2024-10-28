@@ -64,7 +64,7 @@
   <!-- 已登录状态 -->
   <view wx:else class="profile-container">
     <view class="user-info">
-      <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" />
+      <image class="avatar" src="{{userInfo.avatarUrl ? userInfo.avatarUrl : '/images/default-avatar.png'}}" />
       <text class="nickname">{{userInfo.nickName}}</text>
     </view>
     

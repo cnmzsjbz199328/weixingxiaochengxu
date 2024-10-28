@@ -90,5 +90,9 @@ export default {
   saveFailed: '保存失败',
   nicknameRequired: '请输入昵称',
   emailRequired: '请输入邮箱',
-  invalidEmail: '请输入有效的邮箱地址'
+  invalidEmail: '请输入有效的邮箱地址',
+  fetchFailed: '获取数据失败',
+  pleaseLogin: '请先登录',
+  noAbstract: '暂无简介',
+  ok: '确定'
 }

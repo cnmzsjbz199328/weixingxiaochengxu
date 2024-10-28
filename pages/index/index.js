@@ -92,24 +92,49 @@ Page({
   fetchMeetings: function() {
     this.setData({ isLoading: true, hasError: false });
     console.log('Fetching meetings from API')
+    
+    // 获取用户ID
+    const userInfo = app.globalData.userInfo;
+    const userId = userInfo ? userInfo.id : null;
+    
+    // 构建URL字符串
+    let url = `${app.globalData.apiBaseUrl}/meetings`;
+    if (userId) {
+      url += `?userId=${userId}`;
+    }
+
+    console.log('Requesting meetings from:', url); // 添加日志
+
     wx.request({
-      url: `${app.globalData.apiBaseUrl}/meetings`,
+      url: url,
       method: 'GET',
+      header: {
+        'Content-Type': 'application/json',
+        ...(userId && { 'X-User-ID': userId.toString() })
+      },
       success: (res) => {
-        console.log('Meetings fetched successfully:', res.data)
-        // 直接使用 res.data，因为它已经是数组了
+        console.log('Raw meetings response:', res); // 添加原始响应日志
+        console.log('Meetings data:', res.data); // 添加数据日志
+        
         if (res.data && Array.isArray(res.data)) {
           const currentDate = new Date().toISOString().split('T')[0];
+          
           const recentActivities = res.data
             .filter(meeting => meeting.date >= currentDate)
             .sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time))
             .slice(0, 5)
-            .map(meeting => ({
-              id: meeting.id,
-              name: meeting.name || '未知会议',
-              time: `${meeting.date} ${meeting.time}`,
-              location: meeting.location || '地点待定'
-            }));
+            .map(meeting => {
+              console.log('Processing meeting:', meeting); // 添加单个会议处理日志
+              return {
+                id: meeting.id,
+                name: meeting.name || '未知会议',
+                time: `${meeting.date} ${meeting.time}`,
+                location: meeting.location || '地点待定',
+                signupCount: meeting.signupCount || 0,
+                isParticipating: meeting.userStatus === '已报名'
+              };
+            });
+
           console.log('Processed meetings:', recentActivities);
           this.setData({ 
             recentActivities,
@@ -150,5 +175,56 @@ Page({
     this.updateNavBarTitle()
     this.fetchBooks()
     this.fetchMeetings()
+  },
+
+  toggleParticipation: async function(e) {
+    const meetingId = e.currentTarget.dataset.id;
+    const userInfo = app.globalData.userInfo;
+    
+    if (!userInfo || !userInfo.id) {
+      wx.showToast({
+        title: this.data.t('pleaseLogin'),
+        icon: 'none'
+      });
+      return;
+    }
+
+    try {
+      const response = await new Promise((resolve, reject) => {
+        wx.request({
+          url: `${app.globalData.apiBaseUrl}/user/meetings/${meetingId}/toggle?userId=${userInfo.id}`,
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userInfo.id.toString()
+          },
+          success: (res) => {
+            if (res.statusCode === 200) {
+              resolve(res);
+            } else {
+              reject(new Error(`HTTP ${res.statusCode}`));
+            }
+          },
+          fail: reject
+        });
+      });
+
+      // 切换成功后重新获取会议列表以更新状态和人数
+      this.fetchMeetings();
+
+    } catch (error) {
+      console.error('Toggle participation error:', error);
+      wx.showToast({
+        title: this.data.t('operationFailed'),
+        icon: 'none'
+      });
+    }
+  },
+
+  onBookDetail: function(e) {
+    const bookId = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: `/pages/bookdetail/bookdetail?id=${bookId}`
+    });
   }
 })

@@ -34,6 +34,8 @@ App({
     },
     tabBarPages: ['pages/index/index', 'pages/booklist/booklist', 'pages/meetinglist/meetinglist', 'pages/profile/profile'],
     apiBaseUrl: 'https://adelaide-reading-api.tj15982183241.workers.dev/api',
+    r2WorkerUrl: 'https://r2-worker.tj15982183241.workers.dev',  // 添加这一行
+    r2BaseUrl: 'pub-ecb3f89848ab43e9994824d78aadd3c2.r2.dev',   // 添加这一行
     isLoggedIn: false
   },
   
@@ -351,3 +353,4 @@ App({
     wx.setStorageSync('userInfo', userInfo)
   }
 })
+

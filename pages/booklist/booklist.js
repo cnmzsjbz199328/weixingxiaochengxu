@@ -52,21 +52,71 @@ Page({
     })
   },
 
-  fetchBooks: function() {
+  fetchBooks: async function() {
     console.log('Fetching books')
-    // 这里应该是从服务器获取书目数据的逻辑
-    // 暂时使用模拟数据，但在实际应用中，这里应该是一个API调用
-    const books = [
-      { id: 1, name: '百年孤独', author: '加西亚·马尔克斯', abstract: '讲述了布恩迪亚家族七代人的传奇故事...' },
-      { id: 2, name: '1984', author: '乔治·奥威尔', abstract: '描绘了一个极权主义社会的黑暗图景...' },
-      { id: 3, name: '三体', author: '刘慈欣', abstract: '描述了地球人类文明和三体文明的首次接触...' }
-    ];
+    
+    // 获取用户ID
+    const userInfo = app.globalData.userInfo;
+    if (!userInfo || !userInfo.id) {
+      console.error('No user info found');
+      wx.showToast({
+        title: this.data.t('pleaseLogin'),
+        icon: 'none'
+      });
+      return;
+    }
 
-    this.setData({ 
-      books,
-      filteredBooks: books
-    })
-    console.log('Books fetched:', books)
+    try {
+      const url = `${app.globalData.apiBaseUrl}/user/books?userId=${userInfo.id}`;
+      console.log('Making request to:', url);
+      
+      const response = await new Promise((resolve, reject) => {
+        wx.request({
+          url: url,
+          method: 'GET',
+          header: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userInfo.id.toString()
+          },
+          success: (res) => {
+            console.log('Raw response:', res);
+            if (res.statusCode === 200) {
+              resolve(res);
+            } else {
+              reject(new Error(`HTTP ${res.statusCode}`));
+            }
+          },
+          fail: (error) => {
+            console.error('Request failed:', error);
+            reject(error);
+          }
+        });
+      });
+
+      console.log('API Response data:', response.data);
+
+      if (response.statusCode === 200) {
+        const books = Array.isArray(response.data) ? response.data : [];
+        console.log('Processed books:', books);
+        this.setData({ 
+          books,
+          filteredBooks: books
+        });
+      } else {
+        throw new Error(`Server returned ${response.statusCode}`);
+      }
+    } catch (error) {
+      console.error('Fetch books error:', error);
+      let errorMessage = this.data.t('fetchFailed');
+      if (error.message === 'Unauthorized') {
+        errorMessage = this.data.t('pleaseLogin');
+        app.clearSession();
+      }
+      wx.showToast({
+        title: errorMessage,
+        icon: 'none'
+      });
+    }
   },
 
   onBookDetail: function(e) {
@@ -142,5 +192,94 @@ Page({
       searchKeyword,
       filteredBooks
     })
+  },
+
+  onDeleteBook: async function(e) {
+    const bookId = e.currentTarget.dataset.id;
+    const books = this.data.books;
+    const book = books.find(b => b.id === bookId);
+    
+    if (book.confirmDelete) {
+      try {
+        const userInfo = app.globalData.userInfo;
+        if (!userInfo || !userInfo.id) {
+          wx.showToast({
+            title: 'Please login first',
+            icon: 'none'
+          });
+          return;
+        }
+
+        const response = await new Promise((resolve, reject) => {
+          wx.request({
+            url: `${app.globalData.apiBaseUrl}/user/books/${bookId}?userId=${userInfo.id}`,
+            method: 'DELETE',
+            header: {
+              'Content-Type': 'application/json',
+              'X-User-ID': userInfo.id.toString()
+            },
+            success: (res) => {
+              if (res.statusCode === 200 || res.statusCode === 204) {
+                resolve(res);
+              } else {
+                reject(new Error(`HTTP ${res.statusCode}`));
+              }
+            },
+            fail: reject
+          });
+        });
+
+        // 从列表中移除该书籍
+        const updatedBooks = books.filter(b => b.id !== bookId);
+        this.setData({
+          books: updatedBooks,
+          filteredBooks: this.filterBooks(updatedBooks, this.data.searchKeyword)
+        });
+        
+        wx.showToast({
+          title: 'Delete Success',
+          icon: 'success'
+        });
+      } catch (error) {
+        console.error('Delete book error:', error);
+        wx.showToast({
+          title: 'Delete Failed',
+          icon: 'none'
+        });
+      }
+    } else {
+      // 设置确认状态
+      const updatedBooks = books.map(b => ({
+        ...b,
+        confirmDelete: b.id === bookId
+      }));
+      this.setData({
+        books: updatedBooks,
+        filteredBooks: this.filterBooks(updatedBooks, this.data.searchKeyword)
+      });
+
+      // 3秒后重置确认状态
+      setTimeout(() => {
+        const resetBooks = this.data.books.map(b => ({
+          ...b,
+          confirmDelete: false
+        }));
+        this.setData({
+          books: resetBooks,
+          filteredBooks: this.filterBooks(resetBooks, this.data.searchKeyword)
+        });
+      }, 3000);
+    }
+  },
+
+  filterBooks: function(books, searchKeyword) {
+    if (!searchKeyword) {
+      return books;
+    }
+    searchKeyword = searchKeyword.toLowerCase();
+    return books.filter(book => 
+      book.name.toLowerCase().includes(searchKeyword) || 
+      book.author.toLowerCase().includes(searchKeyword)
+    );
   }
 });

@@ -4,38 +4,52 @@
       "pages/booklist/booklist",
       "pages/meetinglist/meetinglist",
       "pages/profile/profile",
-      "pages/editprofile/editprofile"
+      "pages/login/login",
+      "pages/editprofile/editprofile",
+      "pages/createbook/createbook",
+      "pages/createmeeting/createmeeting",
+      "pages/meetingdetail/meetingdetail",
+      "pages/bookdetail/bookdetail"
     ],
     "window": {
       "backgroundTextStyle": "light",
       "navigationBarBackgroundColor": "#fff",
-      "navigationBarTitleText": "阿德莱德读书会",
+      "navigationBarTitleText": "Adelaide Book Club",
       "navigationBarTextStyle": "black"
     },
     "tabBar": {
-      "color": "#8a8a8a",
-      "selectedColor": "#1296db",
+      "color": "#999999",
+      "selectedColor": "#007AFF",
       "backgroundColor": "#ffffff",
       "borderStyle": "black",
       "list": [
         {
           "pagePath": "pages/index/index",
-          "text": "首页"
+          "text": "首页",
+          "iconPath": "/assets/icons/home.png",
+          "selectedIconPath": "/assets/icons/home-active.png"
         },
         {
           "pagePath": "pages/booklist/booklist",
-          "text": "书目"
+          "text": "书目",
+          "iconPath": "/assets/icons/book.png",
+          "selectedIconPath": "/assets/icons/book-active.png"
         },
         {
           "pagePath": "pages/meetinglist/meetinglist",
-          "text": "会议"
+          "text": "会议",
+          "iconPath": "/assets/icons/meeting.png",
+          "selectedIconPath": "/assets/icons/meeting-active.png"
         },
         {
           "pagePath": "pages/profile/profile",
-          "text": "我的"
+          "text": "我的",
+          "iconPath": "/assets/icons/profile.png",
+          "selectedIconPath": "/assets/icons/profile-active.png"
         }
       ]
     },
     "style": "v2",
-    "sitemapLocation": "sitemap.json"
+    "sitemapLocation": "sitemap.json",
+    "lazyCodeLoading": "requiredComponents"
 }
