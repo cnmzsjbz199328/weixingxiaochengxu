@@ -1,64 +1,66 @@
-const app = getApp()
-
+// pages/login/login.js
 Page({
+
+  /**
+   * Page initial data
+   */
   data: {
-    email: '',
-    password: '',
-    t: {}
+
   },
 
-  onLoad: function() {
-    this.setData({ t: app.t.bind(app) })
-    this.updatePageTexts()
+  /**
+   * Lifecycle function--Called when page load
+   */
+  onLoad(options) {
+
   },
 
-  updatePageTexts: function() {
-    this.setData({
-      emailPlaceholder: this.data.t('emailPlaceholder'),
-      passwordPlaceholder: this.data.t('passwordPlaceholder'),
-      loginButtonText: this.data.t('login')
-    })
+  /**
+   * Lifecycle function--Called when page is initially rendered
+   */
+  onReady() {
+
   },
 
-  onInputChange: function(e) {
-    const { field } = e.currentTarget.dataset
-    this.setData({
-      [field]: e.detail.value
-    })
+  /**
+   * Lifecycle function--Called when page show
+   */
+  onShow() {
+
   },
 
-  onLogin: function() {
-    const { email, password } = this.data
-    if (!email || !password) {
-      wx.showToast({
-        title: this.data.t('fillAllFields'),
-        icon: 'none'
-      })
-      return
-    }
+  /**
+   * Lifecycle function--Called when page hide
+   */
+  onHide() {
 
-    wx.showLoading({
-      title: this.data.t('loggingIn'),
-    })
+  },
 
-    app.login(email, password)
-      .then(userInfo => {
-        wx.hideLoading()
-        wx.showToast({
-          title: this.data.t('loginSuccess'),
-          icon: 'success'
-        })
-        wx.switchTab({
-          url: '/pages/profile/profile'
-        })
-      })
-      .catch(error => {
-        wx.hideLoading()
-        wx.showToast({
-          title: error.message,
-          icon: 'none'
-        })
-      })
+  /**
+   * Lifecycle function--Called when page unload
+   */
+  onUnload() {
+
+  },
+
+  /**
+   * Page event handler function--Called when user drop down
+   */
+  onPullDownRefresh() {
+
+  },
+
+  /**
+   * Called when page reach bottom
+   */
+  onReachBottom() {
+
+  },
+
+  /**
+   * Called when user click on the top right corner to share
+   */
+  onShareAppMessage() {
+
   }
 })
-

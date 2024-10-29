@@ -1,0 +1,45 @@
+<view class="container">
+  <view class="auth-title">{{isRegistering ? registerText : loginButtonText}}</view>
+  <view class="form-group">
+    <input 
+      class="input" 
+      type="text" 
+      placeholder="{{emailPlaceholder}}" 
+      bindinput="onInputChange" 
+      data-field="email"
+      value="{{email}}"
+    />
+  </view>
+  <view class="form-group">
+    <input 
+      class="input" 
+      type="password" 
+      placeholder="{{passwordPlaceholder}}" 
+      bindinput="onInputChange" 
+      data-field="password"
+      value="{{password}}"
+    />
+  </view>
+  <view class="form-group" wx:if="{{isRegistering}}">
+    <input 
+      class="input" 
+      type="text" 
+      placeholder="{{nicknamePlaceholder}}" 
+      bindinput="onInputChange" 
+      data-field="nickname"
+      value="{{nickname}}"
+    />
+  </view>
+  <button class="login-btn" bindtap="onLogin">
+    {{isRegistering ? registerText : loginButtonText}}
+  </button>
+  <view class="switch-auth">
+    <text>{{isRegistering ? hasAccountText : noAccountText}}</text>
+    <text 
+      class="switch-btn" 
+      bindtap="{{isRegistering ? 'switchToLogin' : 'switchToRegister'}}">
+      {{isRegistering ? loginNowText : registerNowText}}
+    </text>
+  </view>
+</view>
+

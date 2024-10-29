@@ -1,16 +1,25 @@
 <view class="container">
   <view class="header">
     <view class="search-container">
-      <input class="search-input" placeholder="{{searchPlaceholder}}" bindinput="onSearchInput" value="{{searchKeyword}}"/>
+      <input 
+        class="search-input" 
+        placeholder="{{searchPlaceholder}}" 
+        bindinput="onSearchInput" 
+        value="{{searchKeyword}}"
+      />
       <icon class="search-icon" type="search" size="20"/>
     </view>
   </view>
+
   <view class="meeting-list">
     <view class="meeting-item" wx:for="{{filteredMeetings}}" wx:key="id">
       <view class="meeting-info">
         <text class="meeting-name">{{item.name}}</text>
-        <text class="meeting-time">{{dateText}}: {{item.date}} {{timeText}}: {{item.time}}</text>
-        <text class="meeting-location">{{locationText}}: {{item.location}}</text>
+        <view class="meeting-details">
+          <text>{{dateText}}: {{item.date}}</text>
+          <text>{{timeText}}: {{item.time}}</text>
+          <text>{{locationText}}: {{item.location}}</text>
+        </view>
       </view>
       <button 
         class="delete-btn {{item.confirmDelete ? 'confirm' : ''}}" 
@@ -21,5 +30,8 @@
       </button>
     </view>
   </view>
-  <button class="add-meeting-btn" bindtap="onAddMeeting">{{addMeetingText}}</button>
+
+  <button class="add-meeting-btn" bindtap="onAddMeeting">
+    {{addMeetingText}}
+  </button>
 </view>

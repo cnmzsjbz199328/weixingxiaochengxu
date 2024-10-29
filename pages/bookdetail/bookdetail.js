@@ -10,10 +10,23 @@ Page({
     errorMessage: '',
     isLoadingComments: false,
     commentError: '',
-    canSubmit: false  // 添加新的状态控制变量
+    canSubmit: false,
+    t: {},
+    bookAuthorText: '',
+    bookIntroText: '',
+    readerCommentsText: '',
+    writeCommentText: '',
+    submitCommentText: '',
+    noCommentsText: '',
+    anonymousUserText: '',
+    charactersText: ''
   },
 
   onLoad: function(options) {
+    const t = app.t.bind(app)
+    this.setData({ t: t })
+    this.updatePageTexts()
+    
     if (!options.id) {
       console.error('No book ID provided');
       this.setData({
@@ -27,12 +40,40 @@ Page({
     this.fetchComments(options.id);
   },
 
+  updatePageTexts: function() {
+    const t = this.data.t
+    this.setData({
+      bookAuthorText: t('bookAuthor'),
+      bookIntroText: t('bookIntro'),
+      readerCommentsText: t('readerComments'),
+      writeCommentText: t('writeComment'),
+      submitCommentText: t('submitComment'),
+      noCommentsText: t('noComments'),
+      anonymousUserText: t('anonymousUser'),
+      charactersText: t('characters')
+    })
+  },
+
+  onLanguageChange: function() {
+    const t = app.t.bind(app)
+    this.setData({ t: t })
+    this.updatePageTexts()
+    if (this.data.book) {
+      wx.setNavigationBarTitle({
+        title: this.data.book.name || 'Book Detail'
+      });
+    }
+  },
+
+  onShow: function() {
+    this.onLanguageChange();
+  },
+
   fetchBookDetail: async function(bookId) {
     this.setData({ isLoading: true, hasError: false });
     try {
       const response = await new Promise((resolve, reject) => {
         wx.request({
-          // 修改 API 路径，移除 'user' 部分
           url: `${app.globalData.apiBaseUrl}/books/${bookId}`,
           method: 'GET',
           header: {
@@ -50,7 +91,6 @@ Page({
           book: response.data,
           isLoading: false
         });
-        // 设置导航栏标题
         wx.setNavigationBarTitle({
           title: response.data.name || 'Book Detail'
         });
@@ -65,7 +105,6 @@ Page({
         isLoading: false
       });
       
-      // 显示错误提示
       wx.showToast({
         title: '获取书籍详情失败',
         icon: 'none',
@@ -92,11 +131,9 @@ Page({
       console.log('Comments response:', response);
 
       if (response.statusCode === 200) {
-        // 确保 comments 是一个数组
         const comments = Array.isArray(response.data) ? response.data : 
                         (response.data.comments || []);
         
-        // 格式化评论时间
         const formattedComments = comments.map(comment => ({
           ...comment,
           formattedTime: this.formatCommentTime(comment.createdAt)
@@ -122,15 +159,15 @@ Page({
     const value = e.detail.value;
     this.setData({
       newComment: value,
-      canSubmit: value.trim().length > 0  // 根据输入内容更新按钮状态
+      canSubmit: value.trim().length > 0
     });
   },
 
   submitComment: async function() {
-    // 添加输入验证
+    const t = this.data.t;
     if (!this.data.newComment.trim()) {
       wx.showToast({
-        title: '评论内容不能为空',
+        title: t('commentEmpty'),
         icon: 'none'
       });
       return;
@@ -139,7 +176,7 @@ Page({
     const userInfo = app.globalData.userInfo;
     if (!userInfo || !userInfo.id) {
       wx.showToast({
-        title: '请先登录',
+        title: t('pleaseLogin'),
         icon: 'none'
       });
       return;
@@ -164,26 +201,24 @@ Page({
       });
 
       if (response.statusCode === 200 || response.statusCode === 201) {
-        // 清空输入框并更新按钮状态
         this.setData({ 
           newComment: '',
           canSubmit: false
         });
         
-        // 重新获取评论列表
         await this.fetchComments(this.data.book.id);
         
         wx.showToast({
-          title: '评论发表成功',
+          title: t('commentSuccess'),
           icon: 'success'
         });
       } else {
-        throw new Error('评论发表失败');
+        throw new Error(t('commentFailed'));
       }
     } catch (error) {
       console.error('Submit comment error:', error);
       wx.showToast({
-        title: '评论发表失败，请重试',
+        title: t('commentFailed'),
         icon: 'none'
       });
     }

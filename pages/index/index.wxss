@@ -34,7 +34,7 @@ page {
   border-radius: 15px;
   padding: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  height: 230px;
+  height: 280px;
   overflow-y: auto;
 }
 

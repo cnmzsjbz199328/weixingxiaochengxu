@@ -14,9 +14,7 @@ Page({
   },
 
   onLoad: function() {
-    console.log('Index page loaded')
     this.setData({ t: app.t.bind(app) })
-    console.log('Translation function set:', this.data.t)
     this.updatePageTexts()
     this.updateNavBarTitle()
     this.fetchBooks()
@@ -24,26 +22,19 @@ Page({
   },
 
   updatePageTexts: function() {
-    console.log('Updating page texts')
     const welcomeText = this.data.t('welcome')
     const recentActivitiesText = this.data.t('recentActivities')
     const popularBooksText = this.data.t('popularBooks')
-    
-    console.log('Translated texts:', { welcomeText, recentActivitiesText, popularBooksText })
     
     this.setData({
       welcomeText,
       recentActivitiesText,
       popularBooksText
     })
-    
-    console.log('Page texts updated:', this.data)
   },
 
   updateNavBarTitle: function() {
-    console.log('Updating nav bar title')
     const title = this.data.t('navBarTitle')
-    console.log('Translated nav bar title:', title)
     wx.setNavigationBarTitle({
       title: title
     })
@@ -51,12 +42,10 @@ Page({
 
   fetchBooks: function() {
     this.setData({ isLoading: true, hasError: false });
-    console.log('Fetching books from API')
     wx.request({
       url: `${app.globalData.apiBaseUrl}/books`,
       method: 'GET',
       success: (res) => {
-        console.log('Books fetched successfully:', res.data)
         // 直接使用 res.data，因为它已经是数组了
         if (res.data && Array.isArray(res.data)) {
           const popularBooks = res.data.map(book => ({
@@ -64,7 +53,6 @@ Page({
             name: book.name || '未知书名',
             author: book.author || '未知作者'
           }));
-          console.log('Processed books:', popularBooks);
           this.setData({ 
             popularBooks,
             isLoading: false
@@ -102,9 +90,6 @@ Page({
     if (userId) {
       url += `?userId=${userId}`;
     }
-
-    console.log('Requesting meetings from:', url); // 添加日志
-
     wx.request({
       url: url,
       method: 'GET',
@@ -112,10 +97,7 @@ Page({
         'Content-Type': 'application/json',
         ...(userId && { 'X-User-ID': userId.toString() })
       },
-      success: (res) => {
-        console.log('Raw meetings response:', res); // 添加原始响应日志
-        console.log('Meetings data:', res.data); // 添加数据日志
-        
+      success: (res) => {  
         if (res.data && Array.isArray(res.data)) {
           const currentDate = new Date().toISOString().split('T')[0];
           
@@ -124,7 +106,6 @@ Page({
             .sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time))
             .slice(0, 5)
             .map(meeting => {
-              console.log('Processing meeting:', meeting); // 添加单个会议处理日志
               return {
                 id: meeting.id,
                 name: meeting.name || '未知会议',
@@ -135,7 +116,6 @@ Page({
               };
             });
 
-          console.log('Processed meetings:', recentActivities);
           this.setData({ 
             recentActivities,
             isLoading: false

@@ -173,11 +173,59 @@ button::after {
 }
 
 .action-btn.logout {
-  color: #ff3b30;
   border-bottom: none;
 }
 
 .btn-wrapper {
   width: 100%;
   margin: 10px 0;
+}
+
+.settings {
+  background: #fff;
+  margin-top: 20rpx;
+  padding: 0 30rpx;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  width: 100% !important;
+  height: 44px;
+  line-height: 44px;
+  text-align: left;
+  padding: 0 15px;
+  border: none;
+  border-bottom: 1px solid #eee;
+  background-color: #fff;
+  font-size: 16px;
+  color: #333;
+  margin: 0;
+  border-radius: 0;
+  font-weight: bold; /* 字体变粗体 */
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-left {
+  display: flex;
+  align-items: center;
+}
+
+.setting-label {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.setting-right {
+  display: flex;
+  align-items: center;
+  color: #999;
+}
+
+.arrow {
+  margin-left: 10rpx;
+  color: #ccc;
 }

@@ -25,33 +25,26 @@ Page({
 
   updatePageTexts: function() {
     console.log('Updating page texts')
-    const meetingListText = this.data.t('myMeetingList')
-    const addMeetingText = this.data.t('addMeeting')
-    const dateText = this.data.t('date')
-    const timeText = this.data.t('time')
-    const locationText = this.data.t('location')
-    const searchPlaceholder = this.data.t('searchMeetings')
-    
-    console.log('Translated texts:', { meetingListText, addMeetingText, dateText, timeText, locationText, searchPlaceholder })
-    
+    const t = this.data.t
     this.setData({
-      meetingListText,
-      addMeetingText,
-      dateText,
-      timeText,
-      locationText,
-      searchPlaceholder
+      meetingListText: t('myMeetingList'),
+      addMeetingText: t('addMeeting'),
+      dateText: t('date'),
+      timeText: t('time'),
+      locationText: t('location'),
+      searchPlaceholder: t('searchMeetings')
     })
-    
-    console.log('Page texts updated:', this.data)
+
+    // 更新导航栏标题
+    wx.setNavigationBarTitle({
+      title: t('myMeetingList')
+    })
   },
 
   updateNavBarTitle: function() {
     console.log('Updating nav bar title')
-    const title = this.data.t('myMeetingList')
-    console.log('Translated nav bar title:', title)
     wx.setNavigationBarTitle({
-      title: title
+      title: this.data.t('myMeetingList')
     })
   },
 
@@ -91,31 +84,9 @@ Page({
 
       if (response.statusCode === 200) {
         const meetings = Array.isArray(response.data) ? response.data : [];
-        // 添加参与状态标记
-        const meetingsWithParticipation = meetings.map(meeting => ({
-          ...meeting,
-          isParticipating: false // 默认未参与
-        }));
-        
-        // 获取用户参与的会议列表
-        const participatingResponse = await wx.request({
-          url: `${app.globalData.apiBaseUrl}/user/meetings/participating?userId=${userInfo.id}`,
-          method: 'GET',
-          header: {
-            'X-User-ID': userInfo.id.toString()
-          }
-        });
-
-        if (participatingResponse.statusCode === 200) {
-          const participatingMeetings = new Set(participatingResponse.data.map(m => m.id));
-          meetingsWithParticipation.forEach(meeting => {
-            meeting.isParticipating = participatingMeetings.has(meeting.id);
-          });
-        }
-
         this.setData({ 
-          meetings: meetingsWithParticipation,
-          filteredMeetings: meetingsWithParticipation
+          meetings,
+          filteredMeetings: meetings
         });
       } else {
         throw new Error(`Server returned ${response.statusCode}`);
@@ -174,18 +145,15 @@ Page({
 
   onShow: function() {
     console.log('Meetinglist page onShow')
-    app.updateTabBarLanguage()
     this.updatePageTexts()
-    this.updateNavBarTitle()
+    app.updateTabBarLanguage()
     this.fetchMeetings()
   },
 
   onLanguageChange: function() {
     console.log('Meetinglist page onLanguageChange called')
     this.setData({ t: app.t.bind(app) })
-    console.log('Translation function updated:', this.data.t)
     this.updatePageTexts()
-    this.updateNavBarTitle()
     this.fetchMeetings()
   },
 
@@ -276,66 +244,5 @@ Page({
       meeting.name.toLowerCase().includes(searchKeyword) || 
       meeting.location.toLowerCase().includes(searchKeyword)
     );
-  },
-
-  toggleParticipation: async function(e) {
-    const meetingId = e.currentTarget.dataset.id;
-    const userInfo = app.globalData.userInfo;
-    
-    if (!userInfo || !userInfo.id) {
-      wx.showToast({
-        title: 'Please login first',
-        icon: 'none'
-      });
-      return;
-    }
-
-    try {
-      const response = await new Promise((resolve, reject) => {
-        wx.request({
-          url: `${app.globalData.apiBaseUrl}/user/meetings/${meetingId}/toggle?userId=${userInfo.id}`,
-          method: 'POST',
-          header: {
-            'Content-Type': 'application/json',
-            'X-User-ID': userInfo.id.toString()
-          },
-          success: (res) => {
-            if (res.statusCode === 200) {
-              resolve(res);
-            } else {
-              reject(new Error(`HTTP ${res.statusCode}`));
-            }
-          },
-          fail: reject
-        });
-      });
-
-      // 更新本地状态
-      const updatedMeetings = this.data.meetings.map(meeting => {
-        if (meeting.id === meetingId) {
-          return {
-            ...meeting,
-            isParticipating: !meeting.isParticipating
-          };
-        }
-        return meeting;
-      });
-
-      this.setData({
-        meetings: updatedMeetings,
-        filteredMeetings: this.filterMeetings(updatedMeetings, this.data.searchKeyword)
-      });
-
-      wx.showToast({
-        title: response.data.action === 'join' ? 'Joined' : 'Left',
-        icon: 'success'
-      });
-    } catch (error) {
-      console.error('Toggle participation error:', error);
-      wx.showToast({
-        title: 'Operation failed',
-        icon: 'none'
-      });
-    }
   }
-});
+})

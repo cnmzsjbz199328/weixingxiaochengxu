@@ -1,5 +1,6 @@
 .container {
   padding: 20px;
+  background-color: #f5f5f5;
 }
 
 .header {
@@ -59,8 +60,7 @@
 .meeting-name {
   font-size: 18px;
   font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
+  color: #333;
 }
 
 .meeting-date, .meeting-time, .meeting-location {
@@ -107,4 +107,16 @@
   border-radius: 4px;
   padding: 12px;
   font-size: 16px;
+}
+
+.meeting-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.meeting-details text {
+  font-size: 14px;
+  color: #666;
 }

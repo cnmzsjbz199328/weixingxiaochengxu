@@ -4,24 +4,52 @@ const LoginCheck = require('./utils/loginCheck')
 const logger = require('./utils/logger')  // 添加 logger 引用
 
 App({
-  onLaunch: function () {
-    console.log('App onLaunch')
-    if (!wx.cloud) {
-      console.error('请使用 2.2.3 或以上的基础库以使用云能力')
-    } else {
-      wx.cloud.init({
-        env: 'your-env-id',
-        traceUser: true,
-      })
+  onLaunch: async function () {
+    console.log('=== App Launch Start ===');
+    
+    // 首先初始化默认游客会话
+    console.log('Initializing default guest session');
+    const defaultUserInfo = {
+      id: 1,
+      nickName: 'Guest',
+      email: 'guest@example.com',
+      avatarUrl: '/images/default-avatar.png',
+      booksRead: 0,
+      meetingsAttended: 0
+    };
+
+    // 保存默认会话数据
+    const sessionData = {
+      userId: 1,
+      timestamp: new Date().getTime()
+    };
+
+    try {
+      wx.setStorageSync('sessionData', sessionData);
+      wx.setStorageSync('sessionId', '1');
+      wx.setStorageSync('userInfo', defaultUserInfo);
+      this.globalData.userInfo = defaultUserInfo;
+      console.log('Default guest session initialized:', {
+        sessionData,
+        userInfo: defaultUserInfo
+      });
+    } catch (error) {
+      console.error('Failed to initialize guest session:', error);
     }
+
+    // 初始化语言设置
+    const storedLang = wx.getStorageSync('language') || 'zh';
+    console.log('Initial language setting:', storedLang);
+    this.globalData.language = storedLang;
 
     // 获取系统语言或存储的语言设置
     const storedLanguage = wx.getStorageSync('language');
     if (!storedLanguage) {
-      // 如果没有存储的语言设置，默认使用英语
+      console.log('No stored language found, setting default to en');
       wx.setStorageSync('language', 'en');
       this.globalData.language = 'en';
     } else {
+      console.log('Using stored language:', storedLanguage);
       this.globalData.language = storedLanguage;
     }
 
@@ -30,9 +58,10 @@ App({
 
     // 添加 API 基础 URL 作为环境变量
     this.globalData.apiBaseUrl = 'https://adelaide-reading-api.tj15982183241.workers.dev/api'
+    console.log('API Base URL:', this.globalData.apiBaseUrl);
 
-    // 初始化用户信息
-    this.checkSession()
+    console.log('=== App Launch Complete ===');
+    console.log('Final globalData state:', this.globalData);
   },
 
   globalData: {
@@ -60,6 +89,8 @@ App({
   updateTabBarLanguage() {
     console.log('updateTabBarLanguage called')
     const t = this.t.bind(this)
+    
+    // 定义 tabBar 项目及其对应的翻译 key
     const tabBarItems = [
       { index: 0, text: 'tabHome' },
       { index: 1, text: 'tabBookList' },
@@ -67,28 +98,26 @@ App({
       { index: 3, text: 'tabProfile' }
     ]
 
-    const currentPage = getCurrentPages().pop()
+    // 获取当前页面
+    const pages = getCurrentPages()
+    const currentPage = pages[pages.length - 1]
     const currentPagePath = currentPage ? currentPage.route : ''
-    console.log('Current page path:', currentPagePath)
     
+    // 检查是否需要更新 TabBar
     if (this.globalData.tabBarPages.includes(currentPagePath)) {
       console.log('Updating TabBar items')
       tabBarItems.forEach(item => {
         const translatedText = t(item.text)
-        console.log(`Updating tab ${item.index} to "${translatedText}"`)
         wx.setTabBarItem({
           index: item.index,
           text: translatedText,
           complete: (res) => {
-            console.log(`setTabBarItem result for index ${item.index}:`, res)
             if (res.errMsg !== 'setTabBarItem:ok') {
               console.error(`Failed to update tab bar item ${item.index}:`, res.errMsg)
             }
           }
         })
       })
-    } else {
-      console.log('Not updating TabBar: current page is not a TabBar page')
     }
   },
 
@@ -110,7 +139,6 @@ App({
 
   t(key) {
     const translation = this.globalData.langData[this.globalData.language][key]
-    console.log(`Translating key "${key}" to "${translation}"`)
     return translation
   },
 
@@ -295,7 +323,7 @@ App({
     console.log("Session ID set:", userData.id.toString()); // 新增
   },
 
-  // 统一的API调用函数
+  // 统一的API调用函
   request: function(options) {
     const sessionId = wx.getStorageSync('sessionId');
     const header = {
@@ -361,6 +389,28 @@ App({
   updateUserInfo(userInfo) {
     this.globalData.userInfo = userInfo
     wx.setStorageSync('userInfo', userInfo)
-  }
+  },
+
+  // 在 App 对象中添加自动登录函数
+  autoGuestLogin: async function() {
+    console.log('Attempting auto guest login');
+    try {
+      const guestCredentials = {
+        email: 'guest',
+        password: '1'
+      };
+      
+      const userInfo = await this.login(guestCredentials.email, guestCredentials.password);
+      console.log('Auto guest login successful:', userInfo);
+      
+      // 更新全局用户信息
+      this.globalData.userInfo = userInfo;
+      
+      return userInfo;
+    } catch (error) {
+      console.error('Auto guest login failed:', error);
+      return null;
+    }
+  },
 })
 

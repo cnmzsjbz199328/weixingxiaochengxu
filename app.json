@@ -15,7 +15,7 @@
     "window": {
       "backgroundTextStyle": "light",
       "navigationBarBackgroundColor": "#fff",
-      "navigationBarTitleText": "Adelaide Book Club",
+      "navigationBarTitleText": "My Meetings",
       "navigationBarTextStyle": "black"
     },
     "tabBar": {

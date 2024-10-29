@@ -18,7 +18,8 @@ Page({
     meetingsAttendedText: '',
     editProfileText: '',
     settingsText: '',
-    logoutText: ''
+    logoutText: '',
+    currentLanguage: 'English' // 默认显示
   },
 
   /**
@@ -26,31 +27,45 @@ Page({
    */
   onLoad: function() {
     console.log('Profile page loaded')
+    const t = app.t.bind(app)
     this.setData({ 
-        t: app.t.bind(app),
-        userInfo: app.globalData.userInfo
+      t: t,
+      userInfo: app.globalData.userInfo
     })
     console.log('Translation function set:', this.data.t)
     this.updatePageTexts()
+    this.updateCurrentLanguage()
     this.updateNavBarTitle()
+  },
+
+  updateCurrentLanguage() {
+    // 根据当前语言设置显示文本
+    const lang = app.globalData.language
+    this.setData({
+      currentLanguage: lang === 'en' ? 'English' : '中文'
+    })
   },
 
   updatePageTexts: function() {
     console.log('Updating page texts')
+    const t = this.data.t
     this.setData({
-        booksReadText: this.data.t('booksRead'),
-        meetingsAttendedText: this.data.t('meetingsAttended'),
-        editProfileText: this.data.t('editProfile'),
-        settingsText: this.data.t('settings'),
-        logoutText: this.data.t('logout'),
-        // 添加登录相关的文本
-        welcomeLoginText: this.data.t('welcomeLogin'),
-        loginText: this.data.t('login'),
-        registerText: this.data.t('register'),
-        noAccountText: this.data.t('noAccount'),
-        registerNowText: this.data.t('registerNow'),
-        hasAccountText: this.data.t('hasAccount'),
-        loginNowText: this.data.t('loginNow')
+      booksReadText: t('booksRead'),
+      meetingsAttendedText: t('meetingsAttended'),
+      editProfileText: t('editProfile'),
+      settingsText: t('settings'),
+      logoutText: t('logout'),
+      // 添加未登录状态的文本
+      pleaseLoginText: t('pleaseLogin'),
+      emailPlaceholder: t('emailPlaceholder'),
+      passwordPlaceholder: t('passwordPlaceholder'),
+      loginText: t('login'),
+      registerText: t('register'),
+      noAccountText: t('noAccountText'),
+      registerNowText: t('registerNowText'),
+      hasAccountText: t('hasAccountText'),
+      loginNowText: t('loginNowText'),
+      nicknamePlaceholder: t('nicknamePlaceholder')
     })
     console.log('Page texts updated:', this.data)
   },
@@ -268,11 +283,16 @@ Page({
   },
 
   onLanguageChange: function() {
-    console.log('Profile page onLanguageChange called')
-    this.setData({ t: app.t.bind(app) })
-    console.log('Translation function updated')
-    this.updatePageTexts()
-    this.updateNavBarTitle()
+    wx.showActionSheet({
+      itemList: ['English', '中文'],  // 移除多余的取消按钮
+      success: (res) => {
+        const lang = res.tapIndex === 0 ? 'en' : 'zh'
+        wx.setStorageSync('language', lang)
+        app.switchLanguage(lang)
+        this.updateCurrentLanguage()
+        this.updatePageTexts()
+      }
+    })
   },
 
   fetchUserInfo: function() {
