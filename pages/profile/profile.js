@@ -19,7 +19,8 @@ Page({
     editProfileText: '',
     settingsText: '',
     logoutText: '',
-    currentLanguage: 'English' // 默认显示
+    currentLanguage: 'English', // 默认显示
+    showContact: false
   },
 
   /**
@@ -65,7 +66,8 @@ Page({
       registerNowText: t('registerNowText'),
       hasAccountText: t('hasAccountText'),
       loginNowText: t('loginNowText'),
-      nicknamePlaceholder: t('nicknamePlaceholder')
+      nicknamePlaceholder: t('nicknamePlaceholder'),
+      contactMeText: t('contactMe'),
     })
     console.log('Page texts updated:', this.data)
   },
@@ -94,6 +96,7 @@ Page({
     app.updateTabBarLanguage()
     this.updatePageTexts()
     this.updateNavBarTitle()
+    console.log('Contact Me text:', this.data.contactMeText)
   },
 
   /**
@@ -419,6 +422,25 @@ Page({
         wx.showToast({
           title: '无法打开会议历史',
           icon: 'none'
+        });
+      }
+    });
+  },
+
+  toggleContact: function() {
+    this.setData({
+      showContact: !this.data.showContact  // 切换状态
+    });
+  },
+
+  onLinkedInTap: function() {
+    // 可以添加复制链接或其他操作
+    wx.setClipboardData({
+      data: 'https://www.linkedin.com/in/your-profile',
+      success: function() {
+        wx.showToast({
+          title: 'LinkedIn链接已复制',
+          icon: 'success'
         });
       }
     });

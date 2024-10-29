@@ -72,5 +72,6 @@ module.exports = {
   commentFailed: 'Failed to post comment',
   commentEmpty: 'Comment cannot be empty',
   anonymousUser: 'Anonymous User',
-  characters: 'characters'
+  characters: 'characters',
+  contactMe: 'Contact Me' 
 }

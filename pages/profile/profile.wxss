@@ -160,6 +160,7 @@ button::after {
   text-align: left;
   padding: 0 15px;
   border: none;
+  border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
   background-color: #fff;
   font-size: 16px;
@@ -228,4 +229,76 @@ button::after {
 .arrow {
   margin-left: 10rpx;
   color: #ccc;
+}
+
+/* 联系方式部分样式 */
+.contact-section {
+  position: relative;
+  border-bottom: none;
+}
+
+.contact-popup {
+  top: 100%; /* 改为100%确保从按钮底部开始 */
+  left: 0;
+  right: 0;
+  height: 0;
+  background: #fff;
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* 添加z-index确保显示在最上层 */
+  border-radius: 0 0 8px 8px; /* 添加底部圆角 */
+}
+
+.contact-popup.show {
+  height: 160px; /* 增加高度使其更明显 */
+  border: 1px solid #eee; /* 添加边框 */
+  border-top: none; /* 移除顶部边框 */
+}
+
+.contact-content {
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+  background: #fff; /* 确保背景是白色 */
+}
+
+.contact-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.contact-avatar {
+  width: 50px; /* 增大头像尺寸 */
+  height: 50px;
+  border-radius: 25px;
+  margin-right: 15px;
+  border: 1px solid #eee; /* 添加头像边框 */
+}
+
+.contact-name {
+  font-size: 16px; /* 增大字体 */
+  font-weight: bold;
+  color: #333;
+}
+
+.social-links {
+  padding-top: 15px;
+}
+
+.social-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.social-item:active {
+  background-color: #f5f5f5; /* 添加点击效果 */
+}
+
+.social-text {
+  font-size: 16px;
+  color: #007AFF; /* 改变链接颜色 */
 }

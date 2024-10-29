@@ -84,5 +84,27 @@
     <button class="action-btn logout" bindtap="onLogout">
       {{logoutText}}
     </button>
+
+    <!-- 联系方式按钮和面板移到最后 -->
+    <view class="contact-section">
+      <button class="action-btn" bindtap="toggleContact">
+        {{contactMeText}}
+      </button>
+      <view class="contact-popup {{showContact ? 'show' : ''}}">
+        <view class="contact-content">
+          <view class="contact-header">
+            <image class="contact-avatar" src="/images/contact-avatar.jpg" mode="aspectFill"/>
+            <view class="contact-info">
+              <text class="contact-name">Tom</text>
+            </view>
+          </view>
+          <view class="social-links">
+            <view class="social-item" bindtap="onLinkedInTap">
+                <navigator class="social-text" url="https://linkedin.com/in/tang-jiang-0a55592a3" open-type="navigate">LinkedIn</navigator>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </view>

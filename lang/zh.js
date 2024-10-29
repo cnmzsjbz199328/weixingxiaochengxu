@@ -73,5 +73,6 @@ module.exports = {
   pleaseLogin: '请先登录',
   commentEmpty: '评论内容不能为空',
   anonymousUser: '匿名用户',
-  characters: '字'
+  characters: '字',
+  contactMe: '联系我' 
 }
