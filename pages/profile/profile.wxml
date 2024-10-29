@@ -69,11 +69,11 @@
     </view>
     
     <view class="stats">
-      <view class="stat-item">
+      <view class="stat-item" bindtap="onBooksReadTap">
         <text class="stat-number">{{userInfo.booksRead || 0}}</text>
         <text class="stat-label">Books Read</text>
       </view>
-      <view class="stat-item">
+      <view class="stat-item" bindtap="onMeetingsAttendedTap">
         <text class="stat-number">{{userInfo.meetingsAttended || 0}}</text>
         <text class="stat-label">Meetings Attended</text>
       </view>
@@ -82,7 +82,6 @@
     <view class="action-list">
       <view class="btn-wrapper">
         <button class="action-btn" bindtap="onEditProfile">Edit Profile</button>
-        <button class="action-btn" bindtap="onViewHistory">View History</button>
         <button class="action-btn" bindtap="onSettings">Settings</button>
         <button class="action-btn logout" bindtap="onLogout">Log Out</button>
       </view>

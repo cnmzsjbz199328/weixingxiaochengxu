@@ -17,7 +17,6 @@ Page({
     booksReadText: '',
     meetingsAttendedText: '',
     editProfileText: '',
-    viewHistoryText: '',
     settingsText: '',
     logoutText: ''
   },
@@ -42,7 +41,6 @@ Page({
         booksReadText: this.data.t('booksRead'),
         meetingsAttendedText: this.data.t('meetingsAttended'),
         editProfileText: this.data.t('editProfile'),
-        viewHistoryText: this.data.t('viewHistory'),
         settingsText: this.data.t('settings'),
         logoutText: this.data.t('logout'),
         // 添加登录相关的文本
@@ -215,13 +213,6 @@ Page({
     });
   },
 
-  onViewHistory: function() {
-    console.log('View history button clicked')
-    wx.navigateTo({
-      url: '/pages/history/history'
-    });
-  },
-
   onSettings: function() {
     console.log('Settings button clicked')
     wx.redirectTo({
@@ -382,5 +373,34 @@ Page({
         duration: 2000
       });
     }
+  },
+
+  // 添加新的导航函数
+  onBooksReadTap: function() {
+    console.log('Books read tapped, navigating to comments history');
+    wx.navigateTo({
+      url: '/pages/profile/useractivities?tab=comments',
+      fail: function(error) {
+        console.error('Navigation failed:', error);
+        wx.showToast({
+          title: '无法打开评论历史',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  onMeetingsAttendedTap: function() {
+    console.log('Meetings attended tapped, navigating to meetings history');
+    wx.navigateTo({
+      url: '/pages/profile/useractivities?tab=meetings',
+      fail: function(error) {
+        console.error('Navigation failed:', error);
+        wx.showToast({
+          title: '无法打开会议历史',
+          icon: 'none'
+        });
+      }
+    });
   }
 })

@@ -15,6 +15,16 @@ App({
       })
     }
 
+    // 获取系统语言或存储的语言设置
+    const storedLanguage = wx.getStorageSync('language');
+    if (!storedLanguage) {
+      // 如果没有存储的语言设置，默认使用英语
+      wx.setStorageSync('language', 'en');
+      this.globalData.language = 'en';
+    } else {
+      this.globalData.language = storedLanguage;
+    }
+
     // 初始化语言设置
     this.updateTabBarLanguage()
 
@@ -27,7 +37,7 @@ App({
 
   globalData: {
     userInfo: null,
-    language: 'zh',
+    language: 'en',
     langData: {
       zh: zhLang,
       en: enLang

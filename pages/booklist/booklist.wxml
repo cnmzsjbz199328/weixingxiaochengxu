@@ -1,6 +1,5 @@
 <view class="container">
   <view class="header">
-    <text class="title">{{bookListText}}</text>
     <view class="search-container">
       <input class="search-input" placeholder="{{searchPlaceholder}}" bindinput="onSearchInput" value="{{searchKeyword}}"/>
       <icon class="search-icon" type="search" size="20"/>

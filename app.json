@@ -9,7 +9,8 @@
       "pages/createbook/createbook",
       "pages/createmeeting/createmeeting",
       "pages/meetingdetail/meetingdetail",
-      "pages/bookdetail/bookdetail"
+      "pages/bookdetail/bookdetail",
+      "pages/profile/useractivities"
     ],
     "window": {
       "backgroundTextStyle": "light",

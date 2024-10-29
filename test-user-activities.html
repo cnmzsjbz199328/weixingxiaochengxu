@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>用户活动测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .user-section {
+            background-color: #f5f5f5;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #fff;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .card-title {
+            font-weight: bold;
+            color: #333;
+        }
+        .status-tag {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            color: white;
+        }
+        .status-registered {
+            background-color: #4CAF50;
+        }
+        .status-cancelled {
+            background-color: #f44336;
+        }
+        .comment-content {
+            color: #666;
+            margin: 10px 0;
+        }
+        .meta-info {
+            font-size: 0.9em;
+            color: #888;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        .error {
+            color: red;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>用户活动测试</h1>
+
+    <div class="user-section">
+        <input type="text" id="userId" placeholder="输入用户ID">
+        <button onclick="setUserId()">设置用户</button>
+        <button onclick="clearUserId()" style="background-color: #f44336;">清除用户</button>
+        <div id="currentUser"></div>
+    </div>
+
+    <div class="section">
+        <h2>我的评论</h2>
+        <button onclick="fetchUserComments()">获取评论列表</button>
+        <div id="commentsContainer"></div>
+    </div>
+
+    <div class="section">
+        <h2>我的会议</h2>
+        <button onclick="fetchUserMeetings()">获取会议列表</button>
+        <div id="meetingsContainer"></div>
+    </div>
+
+    <script>
+        const baseUrl = 'https://adelaide-reading-api.tj15982183241.workers.dev';
+        let currentUserId = null;
+
+        function setUserId() {
+            const newUserId = document.getElementById('userId').value;
+            if (newUserId) {
+                currentUserId = newUserId;
+                document.getElementById('currentUser').textContent = `当前用户ID: ${currentUserId}`;
+                fetchUserComments();
+                fetchUserMeetings();
+            }
+        }
+
+        function clearUserId() {
+            currentUserId = null;
+            document.getElementById('userId').value = '';
+            document.getElementById('currentUser').textContent = '未设置用户';
+            document.getElementById('commentsContainer').innerHTML = '';
+            document.getElementById('meetingsContainer').innerHTML = '';
+        }
+
+        async function fetchUserComments() {
+            if (!currentUserId) {
+                showError('commentsContainer', '请先设置用户ID');
+                return;
+            }
+
+            const container = document.getElementById('commentsContainer');
+            container.innerHTML = '<div class="loading">加载中...</div>';
+
+            try {
+                const response = await fetch(`${baseUrl}/api/user/comments?userId=${currentUserId}`);
+                const comments = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(comments.error || '获取评论失败');
+                }
+
+                displayComments(comments);
+            } catch (error) {
+                showError('commentsContainer', error.message);
+            }
+        }
+
+        async function fetchUserMeetings() {
+            if (!currentUserId) {
+                showError('meetingsContainer', '请先设置用户ID');
+                return;
+            }
+
+            const container = document.getElementById('meetingsContainer');
+            container.innerHTML = '<div class="loading">加载中...</div>';
+
+            try {
+                const response = await fetch(`${baseUrl}/api/user/meeting-names?userId=${currentUserId}`);
+                const meetings = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(meetings.error || '获取会议失败');
+                }
+
+                displayMeetings(meetings);
+            } catch (error) {
+                showError('meetingsContainer', error.message);
+            }
+        }
+
+        function displayComments(comments) {
+            const container = document.getElementById('commentsContainer');
+            
+            if (!comments || comments.length === 0) {
+                container.innerHTML = '<div class="card">暂无评论</div>';
+                return;
+            }
+
+            container.innerHTML = comments.map(comment => `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">${comment.bookName}</div>
+                        <div class="meta-info">书籍ID: ${comment.bookId}</div>
+                    </div>
+                    <div class="comment-content">${comment.content}</div>
+                    <div class="meta-info">
+                        评论时间: ${new Date(comment.createdAt).toLocaleString()}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayMeetings(meetings) {
+            const container = document.getElementById('meetingsContainer');
+            
+            if (!meetings || meetings.length === 0) {
+                container.innerHTML = '<div class="card">暂无参与的会议</div>';
+                return;
+            }
+
+            container.innerHTML = meetings.map(meeting => `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">${meeting.meetingName}</div>
+                        <div class="status-tag status-${meeting.participationStatus === '已报名' ? 'registered' : 'cancelled'}">
+                            ${meeting.participationStatus}
+                        </div>
+                    </div>
+                    <div class="meta-info">
+                        会议ID: ${meeting.meetingId}<br>
+                        时间: ${meeting.date} ${meeting.time}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showError(containerId, message) {
+            document.getElementById(containerId).innerHTML = `
+                <div class="error">
+                    错误: ${message}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html> 

@@ -111,7 +111,7 @@ Page({
     const { meetingName, date, time, location, selectedBooks, books } = this.data;
     
     // 验证必填字段
-    if (!meetingName || !date || !time || !location || selectedBooks.length === 0) {
+    if (!meetingName || !date || !time || !location) {
       wx.showToast({
         title: this.data.t('fillAllFields'),
         icon: 'none'
@@ -138,7 +138,9 @@ Page({
         .map(book => book.name);
 
       // 构建完整的会议名称
-      const fullMeetingName = `${meetingName}(${selectedBookNames.join(', ')})`;
+      const fullMeetingName = selectedBookNames.length > 0 
+        ? `${meetingName}(${selectedBookNames.join(', ')})` 
+        : meetingName;
 
       const response = await new Promise((resolve, reject) => {
         wx.request({

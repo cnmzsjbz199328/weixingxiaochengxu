@@ -25,6 +25,8 @@ page {
   margin-bottom: 15px;
   text-align: center;
   color: #2c3e50;
+  display: flex;
+  justify-content: center;
 }
 
 .activity-list, .book-list {
